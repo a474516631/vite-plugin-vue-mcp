@@ -1,0 +1,10 @@
+{
+  "timestamp": "2025-06-01T04:58:47.611Z",
+  "elements": [
+    {
+      "name": "div",
+      "path": "/Users/ycteng/workspace/zyb/vite-plugin-vue-mcp/playground/src/components/UserInfo.vue:3:5",
+      "comment": "测试"
+    }
+  ]
+}

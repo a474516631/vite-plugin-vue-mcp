@@ -33,13 +33,16 @@
   "types": "./dist/index.d.mts",
   "files": [
     "dist",
+    "packages/client/dist",
     "src/overlay.js"
   ],
   "scripts": {
     "build": "unbuild",
+    "build:client": "pnpm -C packages/client build",
+    "build:all": "pnpm build:client && pnpm build",
     "dev": "unbuild --stub",
-    "play": "nr -C playground dev",
-    "prepublishOnly": "nr build",
+    "play": "nr build:client && nr -C playground dev",
+    "prepublishOnly": "nr build:all",
     "lint": "eslint",
     "release": "bumpp && pnpm publish --no-git-checks"
   },
@@ -55,7 +58,9 @@
     "birpc": "catalog:",
     "debug": "catalog:",
     "hookable": "catalog:",
+    "html-tags": "catalog:",
     "nanoid": "catalog:",
+    "parse5": "catalog:",
     "pathe": "catalog:",
     "vite-dev-rpc": "catalog:",
     "vite-hot-client": "catalog:",

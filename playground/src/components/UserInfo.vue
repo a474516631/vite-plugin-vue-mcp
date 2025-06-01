@@ -40,8 +40,8 @@ const userInfo = ref({
 }
 
 .avatar img {
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   border: 3px solid #42b883;
   padding: 3px;
@@ -58,9 +58,10 @@ const userInfo = ref({
 }
 
 .position {
-  color: #42b883;
-  font-size: 1.1rem;
+  color: #ff0000;
+  font-size: 1.8rem;
   margin: 8px 0;
+  font-weight: 500;
 }
 
 .email {
@@ -77,6 +78,10 @@ const userInfo = ref({
   color: #42b883;
   text-decoration: none;
   transition: color 0.3s;
+  font-size: 14px;
+  word-break: break-all;
+  display: inline-block;
+  max-width: 100%;
 }
 
 .email a:hover {

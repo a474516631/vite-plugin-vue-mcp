@@ -11,6 +11,12 @@ export default defineConfig({
     vue(),
     VueMcp({
       appendTo: 'src/main.ts',
+      enableClickToComponent: true,
+      uiReviewSave: {
+        enabled: true,
+        directory: '.ui-review',
+        autoSaveInterval: 0, // 收到数据时立即保存
+      },
     }),
     DevTools(),
   ],

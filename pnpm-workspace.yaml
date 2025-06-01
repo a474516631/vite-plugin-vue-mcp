@@ -1,5 +1,6 @@
 packages:
   - playground
+  - packages/client
 catalog:
   '@antfu/eslint-config': ^4.10.1
   '@antfu/ni': ^24.1.0
@@ -15,9 +16,12 @@ catalog:
   birpc: ^2.2.0
   bumpp: ^10.1.0
   debug: ^4.4.0
+  dom-to-image-more: ^3.6.0
   eslint: ^9.22.0
   hookable: ^5.5.3
+  html-tags: ^5.0.0
   nanoid: ^3.3.10
+  parse5: ^7.3.0
   pathe: ^2.0.3
   pinia: ^3.0.1
   tsx: ^4.19.3
@@ -27,7 +31,7 @@ catalog:
   vite-dev-rpc: ^1.0.7
   vite-hot-client: ^2.0.4
   vite-plugin-vue-devtools: ^7.7.2
-  vite-plugin-vue-mcp: ^0.0.0
   vue: ^3.4.37
   vue-router: ^4.5.0
+  vue-tsc: ^3.0.0-alpha.8
   zod: ^3.24.2

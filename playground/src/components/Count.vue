@@ -28,9 +28,14 @@ const decrease = () => {
   background: white;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
   width: 300px;
   text-align: center;
+  transition: box-shadow 0.3s ease;
+}
+
+.count-card:hover {
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
 }
 
 .title {
@@ -40,7 +45,7 @@ const decrease = () => {
 }
 
 .count-display {
-  font-size: 3rem;
+  font-size: 20px;
   font-weight: bold;
   color: #42b883;
   margin: 20px 0;

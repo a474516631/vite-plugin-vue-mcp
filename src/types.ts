@@ -21,7 +21,22 @@ export interface RpcFunctions {
   onPiniaInfoUpdated: (event: string, data: string) => void
   getPiniaTree: (options: { event: string }) => void
   onPiniaTreeUpdated: (event: string, data: string) => void
+  // ui review elements
+  sendUIReviewElements: (elements: UIReviewElement[]) => void
+  onUIReviewElementsUpdated: (event: string, data: string) => void
+  // get ui review elements
+  getUIReviewElements: (options: { event: string }) => void
 }
+
+// UI评审元素接口定义
+export interface UIReviewElement {
+  name: string
+  path: string
+  type?: string
+  comment?: string
+  screenshot?: string
+}
+
 export interface VueMcpContext {
   hooks: Hookable
   rpc: RpcFunctions
@@ -48,7 +63,14 @@ export interface VueMcpOptions {
   /**
    * Custom MCP server, when this is provided, the built-in MCP tools will be ignored
    */
-  mcpServer?: (viteServer: ViteDevServer) => Awaitable<McpServer>
+  mcpServer?: (viteServer: ViteDevServer, ctx: VueMcpContext) => Awaitable<McpServer>
+
+  /**
+   * The editor to use for the click-to-component feature
+   *
+   * @default 'cursor'
+   */
+  editor?: string
 
   /**
    * Setup the MCP server, this is called when the MCP server is created
@@ -83,4 +105,37 @@ export interface VueMcpOptions {
    * @default ''
    */
   appendTo?: string | RegExp
+
+  /**
+   * Enable the click-to-component feature
+   *
+   * @default true
+   */
+  enableClickToComponent?: boolean
+
+  /**
+   * UI评审元素保存配置
+   */
+  uiReviewSave?: {
+    /**
+     * 是否启用保存功能
+     *
+     * @default false
+     */
+    enabled: boolean
+
+    /**
+     * 保存目录，相对于项目根目录
+     *
+     * @default '.vue-mcp/ui-review'
+     */
+    directory?: string
+
+    /**
+     * 自动保存间隔（毫秒），设为0表示仅在收到数据时保存
+     *
+     * @default 0
+     */
+    autoSaveInterval?: number
+  }
 }
