@@ -1,0 +1,50 @@
+{
+  // 使用 IntelliSense 了解相关属性。
+  // 悬停以查看现有属性的描述。
+  // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "启动 VSCode 扩展",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode-server"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/packages/vscode-server/dist/**/*.js"
+      ],
+      "preLaunchTask": "构建 VSCode 扩展"
+    },
+    {
+      "name": "附加到 AIReview 服务器",
+      "type": "node",
+      "request": "attach",
+      "port": 5011,
+      "address": "localhost",
+      "restart": true,
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    },
+    {
+      "name": "启动 AIReview 服务器",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/packages/vscode-server/dist/extension.cjs",
+      "args": [],
+      "outFiles": [
+        "${workspaceFolder}/packages/vscode-server/dist/**/*.js"
+      ],
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "扩展 + 服务器",
+      "configurations": ["启动 VSCode 扩展", "附加到 AIReview 服务器"]
+    }
+  ]
+}

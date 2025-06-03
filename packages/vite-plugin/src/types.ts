@@ -3,7 +3,10 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { Implementation as McpServerInfo } from '@modelcontextprotocol/sdk/types.js'
 import type { BirpcGroupReturn } from 'birpc'
 import type { Hookable } from 'hookable'
-import type { ViteDevServer } from 'vite'
+import type { AIEditRequest, AIEditResult } from './rpc'
+
+// 使用any类型代替ViteDevServer
+type ViteDevServer = any
 
 export interface RpcFunctions {
   // components
@@ -26,6 +29,9 @@ export interface RpcFunctions {
   onUIReviewElementsUpdated: (event: string, data: string) => void
   // get ui review elements
   getUIReviewElements: (options: { event: string }) => void
+  // AI编辑功能
+  handleAIEdit: (request: AIEditRequest) => Promise<AIEditResult>
+  onAIEditResult: (event: string, data: string) => void
 }
 
 // UI评审元素接口定义
@@ -35,6 +41,10 @@ export interface UIReviewElement {
   type?: string
   comment?: string
   screenshot?: string
+  /** 是否已提交 */
+  isSubmitted?: boolean
+  /** 是否已修复 */
+  isFixed?: boolean
 }
 
 export interface VueMcpContext {

@@ -1,5 +1,5 @@
 {
-  "name": "vite-plugin-vue-mcp",
+  "name": "aireview",
   "type": "module",
   "version": "0.3.2",
   "packageManager": "pnpm@10.6.2",
@@ -7,12 +7,12 @@
   "author": "Arlo <webfansplz@gmail.com>",
   "license": "MIT",
   "funding": "https://github.com/sponsors/webfansplz",
-  "homepage": "https://github.com/webfansplz/vite-plugin-vue-mcp#readme",
+  "homepage": "https://github.com/webfansplz/aireview#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/webfansplz/vite-plugin-vue-mcp.git"
+    "url": "git+https://github.com/webfansplz/aireview.git"
   },
-  "bugs": "https://github.com/webfansplz/vite-plugin-vue-mcp/issues",
+  "bugs": "https://github.com/webfansplz/aireview/issues",
   "keywords": [
     "vite-plugin",
     "vue",
@@ -22,27 +22,33 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "types": "./packages/vite-plugin/dist/index.d.mts",
+      "import": "./packages/vite-plugin/dist/index.mjs",
+      "require": "./packages/vite-plugin/dist/index.cjs"
+    },
+    "./vite-plugin": {
+      "types": "./packages/vite-plugin/dist/index.d.mts",
+      "import": "./packages/vite-plugin/dist/index.mjs",
+      "require": "./packages/vite-plugin/dist/index.cjs"
     },
     "./*": "./*"
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
+  "main": "./packages/vite-plugin/dist/index.cjs",
+  "module": "./packages/vite-plugin/dist/index.mjs",
+  "types": "./packages/vite-plugin/dist/index.d.mts",
   "files": [
-    "dist",
     "packages/client/dist",
-    "src/overlay.js"
+    "packages/vite-plugin/dist"
   ],
   "scripts": {
-    "build": "unbuild",
+    "build": "pnpm build:vite-plugin",
     "build:client": "pnpm -C packages/client build",
-    "build:all": "pnpm build:client && pnpm build",
-    "dev": "unbuild --stub",
-    "play": "nr build:client && nr -C playground dev",
-    "prepublishOnly": "nr build:all",
+    "build:vite-plugin": "pnpm -C packages/vite-plugin build",
+    "build:all": "pnpm build:client && pnpm build:vite-plugin",
+    "dev": "pnpm -C packages/vite-plugin dev",
+    "dev:vite-plugin": "pnpm -C packages/vite-plugin dev",
+    "play": "pnpm build:client && pnpm build:vite-plugin && pnpm -C playground dev",
+    "prepublishOnly": "pnpm build:all",
     "lint": "eslint",
     "release": "bumpp && pnpm publish --no-git-checks"
   },
@@ -50,6 +56,7 @@
     "vite": "^3.1.0 || ^4.0.0-0 || ^5.0.0-0 || ^6.0.0-0"
   },
   "dependencies": {
+    "@aireview/vite-plugin": "workspace:*",
     "@antfu/utils": "catalog:",
     "@modelcontextprotocol/sdk": "catalog:",
     "@vue/devtools-core": "catalog:",
@@ -62,6 +69,7 @@
     "nanoid": "catalog:",
     "parse5": "catalog:",
     "pathe": "catalog:",
+    "tailwindcss": "catalog:",
     "vite-dev-rpc": "catalog:",
     "vite-hot-client": "catalog:",
     "zod": "catalog:"

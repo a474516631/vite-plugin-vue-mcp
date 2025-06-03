@@ -10,6 +10,8 @@
         @view="$emit('view', item.path)"
         @comment="$emit('comment', item.path)"
         @screenshot="$emit('screenshot', item.path)"
+        @toggle-submit="$emit('toggleSubmit', item.path)"
+        @toggle-fixed="$emit('toggleFixed', item.path)"
       />
       <li v-if="elements.length === 0" class="vue-mcp-element-item vue-mcp-empty-item">
         暂无选择的元素
@@ -28,6 +30,8 @@ export interface ElementInfo {
   type?: string;
   comment?: string;
   screenshot?: string;
+  isSubmitted?: boolean;
+  isFixed?: boolean;
 }
 
 // Props
@@ -41,6 +45,8 @@ defineEmits<{
   (e: 'view', path: string): void
   (e: 'comment', path: string): void
   (e: 'screenshot', path: string): void
+  (e: 'toggleSubmit', path: string): void
+  (e: 'toggleFixed', path: string): void
 }>()
 </script>
 

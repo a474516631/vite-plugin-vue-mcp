@@ -1,5 +1,6 @@
 // @ts-expect-error dom-to-image-more缺少类型定义
 import domToImage from 'dom-to-image-more'
+// import { findElementByPath } from './stableElementId'
 
 /**
  * 对目标元素进行截图
@@ -64,28 +65,4 @@ export async function captureElementScreenshot(
   catch (error) {
     onError(error instanceof Error ? error : new Error(String(error)))
   }
-}
-
-/**
- * 查找带有源代码位置信息的元素
- * @param path 元素路径
- * @returns 找到的DOM元素或null
- */
-export function findElementByPath(path: string): HTMLElement | null {
-  // 首先通过data属性直接查找
-  const elements = document.querySelectorAll(`[data-__source-code-location="${path}"]`)
-  if (elements.length > 0) {
-    return elements[0] as HTMLElement
-  }
-
-  // 尝试其他方式查找
-  const allElements = document.querySelectorAll('*')
-  for (const el of allElements) {
-    const htmlEl = el as HTMLElement
-    if (htmlEl.dataset && htmlEl.dataset.__sourceCodeLocation === path) {
-      return htmlEl
-    }
-  }
-
-  return null
 }

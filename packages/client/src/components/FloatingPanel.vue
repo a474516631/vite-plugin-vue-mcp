@@ -32,19 +32,24 @@
           @view="showElementBoxModel"
           @comment="commentElement"
           @screenshot="screenshotElement"
+          @toggle-submit="toggleElementSubmitted"
+          @toggle-fixed="toggleElementFixed"
         />
         
         <!-- 保存状态提示 -->
         <div v-if="saveStatus" class="vue-mcp-save-status" :class="saveStatus.type">
-          <span class="vue-mcp-save-status-icon">{{ saveStatus.type === 'success' ? '✓' : '⚠' }}</span>
+          <span class="vue-mcp-save-status-icon">
+            {{ saveStatus.type === 'success' ? '✓' : saveStatus.type === 'info' ? 'ℹ' : '⚠' }}
+          </span>
           <span class="vue-mcp-save-status-text">{{ saveStatus.message }}</span>
         </div>
         
         <!-- 操作按钮 -->
         <ActionButtons
-          @add="addCurrentElement"
+          @submit="submitCurrentElement"
           @refresh="refreshUIReviewElements"
           @clear="clearElements"
+          :disabled-submit="allElementsSubmitted"
         />
       </form>
     </div>
@@ -87,9 +92,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import { showBoxModel, openEditor } from '../utils/clickToComponent'
-import { captureElementScreenshot, findElementByPath } from '../utils/screenshot'
+// 导入旧的截图函数
+import { captureElementScreenshot } from '../utils/screenshot'
+// 导入新的稳定标识符相关函数
+import { findElementByPath, findElementByStableId, generateStableId, updateElementsWithStableId } from '../utils/stableElementId'
 import { ElementInfo, SaveStatus, Position } from '../types'
 
 // 组件导入
@@ -106,6 +114,20 @@ import domToImage from 'dom-to-image-more'
 // 状态
 const isMinimized = ref(false)
 const selectedElements = ref<ElementInfo[]>([])
+const unifiedElements = computed(() => {
+  return selectedElements.value.filter((el) => {
+    return !el.isFixed
+  })
+})
+// 计算属性：检查是否所有未修复的元素都已提交
+const allElementsSubmitted = computed(() => {
+  // 如果没有元素，则返回 true（禁用提交按钮）
+  if (unifiedElements.value.length === 0) {
+    return true
+  }
+  // 检查是否所有未修复的元素都已提交
+  return unifiedElements.value.every(el => el.isSubmitted === true)
+})
 const panelRef = ref<HTMLElement | null>(null)
 const lastHighlightedElement = ref<HTMLElement | null>(null) // 记录最后一个高亮的元素
 const saveStatus = ref<SaveStatus | null>(null)
@@ -193,52 +215,26 @@ const stopDrag = () => {
 }
 
 // 元素操作方法
-const addCurrentElement = () => {
-  // 使用最后一个高亮的元素
-  const hoveredElement = lastHighlightedElement.value || document.querySelector('[vue-click-to-component-target="hover"]')
+const submitCurrentElement = () => {
+  // 将所有未提交的元素标记为已提交
+  unifiedElements.value.forEach(element => {
+    if (!element.isSubmitted) {
+      element.isSubmitted = true
+    }
+  })
   
-  if (hoveredElement) {
-    const sourceCodeLocation = hoveredElement.dataset.__sourceCodeLocation
-    
-    if (sourceCodeLocation) {
-      addElement({
-        name: getElementName(hoveredElement),
-        path: sourceCodeLocation
-      })
-      
-      // 显示添加成功提示
-      showKeyboardShortcutNotification()
-      return true
-    } else {
-      saveStatus.value = {
-        type: 'error',
-        message: '该元素没有源代码位置信息',
-        timestamp: Date.now()
-      }
-      
-      // 3秒后清除状态提示
-      setTimeout(() => {
-        if (saveStatus.value && saveStatus.value.timestamp + 3000 < Date.now()) {
-          saveStatus.value = null
-        }
-      }, 3000)
-    }
-  } else {
-    saveStatus.value = {
-      type: 'error',
-      message: '请先将鼠标悬停在要添加的元素上（按住Alt键）',
-      timestamp: Date.now()
-    }
-    
-    // 3秒后清除状态提示
-    setTimeout(() => {
-      if (saveStatus.value && saveStatus.value.timestamp + 3000 < Date.now()) {
-        saveStatus.value = null
-      }
-    }, 3000)
+  // 显示成功提示
+  saveStatus.value = {
+    type: 'success',
+    message: '所有元素已标记为已提交',
+    timestamp: Date.now()
   }
   
-  return false
+  // 保存更新后的元素
+  sendDataToMcpService()
+  
+  // 发送 AI 编辑请求
+  fetchSubmit()
 }
 
 const addElement = (element: ElementInfo) => {
@@ -257,7 +253,17 @@ const removeElement = (path: string) => {
 
 // 显示元素的盒模型
 const showElementBoxModel = (path: string) => {
-  const element = findElementByPath(path)
+  // 先尝试通过源代码位置找
+  let element = findElementByPath(path)
+
+  // 查找对应的元素信息
+  const elementInfo = selectedElements.value.find(el => el.path === path)
+  
+  // 如果有稳定ID，尝试使用稳定ID查找
+  if (!element && elementInfo && elementInfo.stableId) {
+    element = findElementByStableId(elementInfo.stableId)
+  }
+  
   if (element) {
     showBoxModel(element)
   } else {
@@ -321,8 +327,12 @@ const sendDataToMcpService = () => {
   }
 }
 
-// 监听已选择元素的变化，自动发送数据
-watch(selectedElements, () => {
+// 更新监听已选择元素的变化，自动发送数据，同时更新稳定ID
+watch(selectedElements, (newElements) => {
+  // 为没有稳定ID的元素添加稳定ID
+  updateElementsWithStableId(newElements)
+  
+  // 发送数据到MCP服务
   sendDataToMcpService()
 }, { deep: true })
 
@@ -367,8 +377,16 @@ const captureScreenshot = () => {
 
     // 延迟一点点，确保UI更新
     setTimeout(() => {
-      // 查找元素
-      const targetElement = findElementByPath(currentCommentPath.value)
+      // 先尝试通过源代码位置找
+      let targetElement = findElementByPath(currentCommentPath.value)
+
+      // 查找对应的元素信息
+      const elementInfo = selectedElements.value.find(el => el.path === currentCommentPath.value)
+      
+      // 如果有稳定ID，尝试使用稳定ID查找
+      if (!targetElement && elementInfo && elementInfo.stableId) {
+        targetElement = findElementByStableId(elementInfo.stableId)
+      }
       
       if (!targetElement) {
         console.error('未找到要截图的元素')
@@ -477,12 +495,16 @@ const addElementFromPopover = () => {
   const sourceCodeLocation = lastHighlightedElement.value.dataset.__sourceCodeLocation
   
   if (sourceCodeLocation) {
+    // 生成稳定ID
+    const stableId = generateStableId(lastHighlightedElement.value)
+    
     // 添加元素
     addElement({
       name: getElementName(lastHighlightedElement.value),
       path: sourceCodeLocation,
       comment: popoverCommentText.value.trim() || undefined,
-      screenshot: screenshotPreviewPopover.value || undefined
+      screenshot: screenshotPreviewPopover.value || undefined,
+      stableId: stableId
     })
     
     // 显示添加成功提示
@@ -557,6 +579,18 @@ const fetchUIReviewElements = async () => {
   return data
 }
 
+const fetchSubmit = async () => {
+  const response = await fetch('/__mcp/api/ai-edit', {
+    method: 'POST',
+    body: JSON.stringify({
+      filePath: '',
+      prompt: '',
+    }),
+  })
+  const data = await response.json()
+  return data
+}
+
 // 添加按钮用于主动请求刷新UI走查数据
 const refreshUIReviewElements = async () => {
   try {
@@ -584,6 +618,62 @@ const refreshUIReviewElements = async () => {
       message: `刷新失败: ${error instanceof Error ? error.message : String(error)}`,
       timestamp: Date.now()
     }
+  }
+}
+
+// 切换元素的提交状态
+const toggleElementSubmitted = (path: string) => {
+  const index = selectedElements.value.findIndex(el => el.path === path)
+  if (index !== -1) {
+    const element = selectedElements.value[index]
+    // 切换状态
+    element.isSubmitted = !element.isSubmitted
+    
+    // 如果标记为已提交，但之前未提交过，则显示提示
+    if (element.isSubmitted) {
+      saveStatus.value = {
+        type: 'success',
+        message: '已标记为已提交',
+        timestamp: Date.now()
+      }
+    } else {
+      saveStatus.value = {
+        type: 'info',
+        message: '已取消提交标记',
+        timestamp: Date.now()
+      }
+    }
+    
+    // 保存更新后的元素
+    sendDataToMcpService()
+  }
+}
+
+// 切换元素的修复状态
+const toggleElementFixed = (path: string) => {
+  const index = selectedElements.value.findIndex(el => el.path === path)
+  if (index !== -1) {
+    const element = selectedElements.value[index]
+    // 切换状态
+    element.isFixed = !element.isFixed
+    
+    // 如果标记为已修复，但之前未修复过，则显示提示
+    if (element.isFixed) {
+      saveStatus.value = {
+        type: 'success',
+        message: '已标记为已修复',
+        timestamp: Date.now()
+      }
+    } else {
+      saveStatus.value = {
+        type: 'info',
+        message: '已取消修复标记',
+        timestamp: Date.now()
+      }
+    }
+    
+    // 保存更新后的元素
+    sendDataToMcpService()
   }
 }
 
@@ -778,28 +868,33 @@ onUnmounted(() => {
 }
 
 .vue-mcp-save-status {
-  margin-top: 12px;
-  padding: 8px;
+  margin-top: 8px;
+  padding: 6px 10px;
   border-radius: 4px;
-  background-color: #f0f0f0;
+  font-size: 12px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  animation: fadeIn 0.3s ease;
 }
 
 .vue-mcp-save-status.success {
-  background-color: #d1fae5;
-  border: 1px solid #a7f3d0;
+  background-color: #ecfdf5;
+  border: 1px solid #d1fae5;
 }
 
 .vue-mcp-save-status.error {
-  background-color: #fef3c7;
-  border: 1px solid #fde68a;
+  background-color: #fef2f2;
+  border: 1px solid #fee2e2;
+}
+
+.vue-mcp-save-status.info {
+  background-color: #eff6ff;
+  border: 1px solid #dbeafe;
 }
 
 .vue-mcp-save-status-icon {
-  margin-right: 8px;
-  font-size: 16px;
+  margin-right: 6px;
+  font-weight: bold;
 }
 
 .vue-mcp-save-status-text {

@@ -1,7 +1,82 @@
+<script setup lang="ts">
+import { computed, reactive, ref } from 'vue'
+
+const pageTitle = ref('About Us')
+const showTeam = ref(false)
+
+const companyInfo = reactive({
+  description: 'We are a leading technology company dedicated to innovation and excellence in software development. Our commitment to quality and customer satisfaction drives everything we do.',
+  foundedYear: 2020,
+  employeeCount: 150,
+  officeCount: 5,
+})
+
+const mission = ref('To empower businesses and individuals through innovative technology solutions that drive growth and success.')
+const vision = ref('To be the global leader in creating transformative digital experiences that shape the future of technology.')
+
+const contactForm = reactive({
+  name: '',
+  email: '',
+  message: '',
+})
+
+const teamMembers = ref([
+  {
+    id: 1,
+    name: 'John Smith',
+    position: 'Chief Executive Officer',
+    bio: 'Over 15 years of experience in tech leadership',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
+  },
+  {
+    id: 2,
+    name: 'Sarah Johnson',
+    position: 'Chief Technology Officer',
+    bio: 'Former Silicon Valley tech lead',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+  },
+  {
+    id: 3,
+    name: 'Michael Chen',
+    position: 'Product Director',
+    bio: 'Product strategy and innovation expert',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
+  },
+  {
+    id: 4,
+    name: 'Emily Brown',
+    position: 'Marketing Director',
+    bio: 'Digital marketing and growth specialist',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
+  },
+])
+
+const isFormValid = computed(() => {
+  return contactForm.name.trim() !== ''
+    && contactForm.email.trim() !== ''
+    && contactForm.message.trim() !== ''
+})
+
+function toggleTeam() {
+  showTeam.value = !showTeam.value
+}
+
+function submitForm() {
+  if (isFormValid.value) {
+    console.log('Form submitted:', contactForm)
+    // Add actual form submission logic here
+    alert('Thank you for your message! We will get back to you soon.')
+    // Reset form
+    contactForm.name = ''
+    contactForm.email = ''
+    contactForm.message = ''
+  }
+}
+</script>
+
 <template>
   <div class="about">
     <h1>{{ pageTitle }}</h1>
-    
     <div class="company-info">
       <h2>Company Overview</h2>
       <p>{{ companyInfo.description }}</p>
@@ -32,7 +107,7 @@
       </div>
     </div>
 
-    <div class="team-section" v-if="showTeam">
+    <div v-if="showTeam" class="team-section">
       <h2>Our Leadership Team</h2>
       <div class="team-grid">
         <div v-for="member in teamMembers" :key="member.id" class="team-member">
@@ -40,17 +115,25 @@
             <img :src="member.avatar" :alt="member.name">
           </div>
           <h3>{{ member.name }}</h3>
-          <p class="position">{{ member.position }}</p>
-          <p class="bio">{{ member.bio }}</p>
+          <p class="position">
+            {{ member.position }}
+          </p>
+          <p class="bio">
+            {{ member.bio }}
+          </p>
         </div>
       </div>
-      <button class="btn-secondary" @click="toggleTeam">Hide Team</button>
+      <button class="btn-secondary" @click="toggleTeam">
+        Hide Team
+      </button>
     </div>
-    <button v-else class="btn-secondary" @click="toggleTeam">Show Team</button>
+    <button v-else class="btn-secondary" @click="toggleTeam">
+      Show Team
+    </button>
 
     <div class="contact-form">
       <h2>Contact Us</h2>
-      <form @submit.prevent="submitForm" class="form">
+      <form class="form" @submit.prevent="submitForm">
         <div class="form-group">
           <label>Name</label>
           <input v-model="contactForm.name" required placeholder="Enter your name">
@@ -61,89 +144,15 @@
         </div>
         <div class="form-group">
           <label>Message</label>
-          <textarea v-model="contactForm.message" required placeholder="How can we help you?"></textarea>
+          <textarea v-model="contactForm.message" required placeholder="How can we help you?" />
         </div>
-        <button type="submit" class="btn-primary" :disabled="!isFormValid">Send Message</button>
+        <button type="submit" class="btn-primary" :disabled="!isFormValid">
+          Send Message
+        </button>
       </form>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
-
-const pageTitle = ref('About Us')
-const showTeam = ref(false)
-
-const companyInfo = reactive({
-  description: 'We are a leading technology company dedicated to innovation and excellence in software development. Our commitment to quality and customer satisfaction drives everything we do.',
-  foundedYear: 2020,
-  employeeCount: 150,
-  officeCount: 5
-})
-
-const mission = ref('To empower businesses and individuals through innovative technology solutions that drive growth and success.')
-const vision = ref('To be the global leader in creating transformative digital experiences that shape the future of technology.')
-
-const contactForm = reactive({
-  name: '',
-  email: '',
-  message: ''
-})
-
-const teamMembers = ref([
-  { 
-    id: 1, 
-    name: 'John Smith', 
-    position: 'Chief Executive Officer',
-    bio: 'Over 15 years of experience in tech leadership',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John'
-  },
-  { 
-    id: 2, 
-    name: 'Sarah Johnson', 
-    position: 'Chief Technology Officer',
-    bio: 'Former Silicon Valley tech lead',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah'
-  },
-  { 
-    id: 3, 
-    name: 'Michael Chen', 
-    position: 'Product Director',
-    bio: 'Product strategy and innovation expert',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael'
-  },
-  { 
-    id: 4, 
-    name: 'Emily Brown', 
-    position: 'Marketing Director',
-    bio: 'Digital marketing and growth specialist',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily'
-  }
-])
-
-const isFormValid = computed(() => {
-  return contactForm.name.trim() !== '' && 
-         contactForm.email.trim() !== '' && 
-         contactForm.message.trim() !== ''
-})
-
-const toggleTeam = () => {
-  showTeam.value = !showTeam.value
-}
-
-const submitForm = () => {
-  if (isFormValid.value) {
-    console.log('Form submitted:', contactForm)
-    // Add actual form submission logic here
-    alert('Thank you for your message! We will get back to you soon.')
-    // Reset form
-    contactForm.name = ''
-    contactForm.email = ''
-    contactForm.message = ''
-  }
-}
-</script>
 
 <style scoped>
 .about {
@@ -320,4 +329,4 @@ input:focus, textarea:focus {
 .btn-secondary:hover {
   background-color: #5a6268;
 }
-</style> 
+</style>

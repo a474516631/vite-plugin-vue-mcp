@@ -1,5 +1,5 @@
 {
-  "name": "@vite-plugin-vue-mcp/client",
+  "name": "@aireview/client",
   "type": "module",
   "version": "0.1.0",
   "private": true,

@@ -1,29 +1,40 @@
 packages:
   - playground
-  - packages/client
+  - packages/*
 catalog:
   '@antfu/eslint-config': ^4.10.1
   '@antfu/ni': ^24.1.0
   '@antfu/utils': ^9.1.0
   '@modelcontextprotocol/inspector': ^0.6.0
   '@modelcontextprotocol/sdk': ^1.7.0
+  '@types/cors': ^2.8.18
   '@types/debug': ^4.1.12
+  '@types/express': ^5.0.1
   '@types/node': latest
+  '@types/node-fetch': ^3.0.3
+  '@types/vscode': ^1.85.0
+  '@types/ws': ^8.18.1
   '@vitejs/plugin-vue': ^5.1.2
   '@vue/devtools-core': ^7.7.2
   '@vue/devtools-kit': ^7.7.2
   ansis: ^3.17.0
   birpc: ^2.2.0
   bumpp: ^10.1.0
+  cors: ^2.8.5
   debug: ^4.4.0
   dom-to-image-more: ^3.6.0
   eslint: ^9.22.0
+  express: ^5.1.0
   hookable: ^5.5.3
   html-tags: ^5.0.0
   nanoid: ^3.3.10
+  node-fetch: ^3.3.2
   parse5: ^7.3.0
   pathe: ^2.0.3
   pinia: ^3.0.1
+  reactive-vscode: ^0.2.14
+  tailwindcss: ^4.1.8
+  tsdown: ^0.11.5
   tsx: ^4.19.3
   typescript: ~5.8.2
   unbuild: ^3.5.0
@@ -34,4 +45,5 @@ catalog:
   vue: ^3.4.37
   vue-router: ^4.5.0
   vue-tsc: ^3.0.0-alpha.8
+  ws: ^8.18.2
   zod: ^3.24.2

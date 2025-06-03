@@ -1,30 +1,20 @@
-<template>
-  <div class="container" @mousemove="handleMouseMove">
-    <UserInfo />
-    <Count />
-    <div class="particles">
-      <div v-for="i in 20" :key="i" class="particle" :style="getParticleStyle(i)"></div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue'
+import NumberCount from '../components/NumberCount.vue'
 import UserInfo from '../components/UserInfo.vue'
-import Count from '../components/Count.vue'
-import { ref, onMounted, onUnmounted } from 'vue'
 
 // 鼠标位置状态
 const mouseX = ref(0)
 const mouseY = ref(0)
 
 // 处理鼠标移动事件
-const handleMouseMove = (e: MouseEvent) => {
+function handleMouseMove(e: MouseEvent) {
   mouseX.value = e.clientX
   mouseY.value = e.clientY
 }
 
 // 为粒子生成样式
-const getParticleStyle = (index: number) => {
+function getParticleStyle(_index: number) {
   const size = Math.floor(Math.random() * 10) + 5
   const speed = Math.random() * 50 + 20
   const randomDelay = Math.random() * 5
@@ -37,32 +27,34 @@ const getParticleStyle = (index: number) => {
     backgroundColor: `rgba(255, 255, 255, ${Math.random() * 0.3 + 0.1})`,
     animationDuration: `${speed}s`,
     animationDelay: `${randomDelay}s`,
-    transform: mouseX.value && mouseY.value ? 
-      `translate(${(mouseX.value / window.innerWidth - 0.5) * 20}px, ${(mouseY.value / window.innerHeight - 0.5) * 20}px)` : 
-      'none',
-    transition: 'transform 0.3s ease-out'
+    transform: mouseX.value && mouseY.value
+      ? `translate(${(mouseX.value / window.innerWidth - 0.5) * 20}px, ${(mouseY.value / window.innerHeight - 0.5) * 20}px)`
+      : 'none',
+    transition: 'transform 0.3s ease-out',
   }
 }
 
 // 添加滚动效果
-let scrollInterval: number | null = null
-
 onMounted(() => {
   // 每隔一段时间随机改变背景色
-  scrollInterval = window.setInterval(() => {
-    const container = document.querySelector('.container') as HTMLElement
-    if (container) {
-      container.style.filter = `hue-rotate(${Math.random() * 360}deg)`
-    }
-  }, 5000)
-})
 
-onUnmounted(() => {
-  if (scrollInterval) {
-    clearInterval(scrollInterval)
-  }
 })
 </script>
+
+<template>
+  <div class="container" @mousemove="handleMouseMove">
+    <UserInfo />
+    <NumberCount />
+    <div class="particles">
+      <div v-for="i in 20" :key="i" class="particle" :style="getParticleStyle(i)" />
+    </div>
+
+    <!-- 添加AI编辑演示组件 -->
+    <div class="ai-edit-section">
+      <AIEditDemo />
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .container {
@@ -73,16 +65,8 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   gap: 50px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  animation: gradientAnimation 15s ease infinite;
-  background-size: 400% 400%;
   position: relative;
   overflow: hidden;
-  transition: filter 2s ease;
-}
-
-.container:hover {
-  filter: brightness(1.1);
 }
 
 @keyframes gradientAnimation {
@@ -105,13 +89,11 @@ onUnmounted(() => {
   height: 100%;
   z-index: 1;
   pointer-events: none;
+  background-color: white;
 }
 
 .particle {
-  position: absolute;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.2);
-  animation: floatAnimation infinite linear;
+  display: none;
 }
 
 @keyframes floatAnimation {

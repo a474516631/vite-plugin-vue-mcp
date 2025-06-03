@@ -1,0 +1,70 @@
+{
+  "publisher": "@aireview/vscode-server",
+  "name": "@aireview/vscode-server",
+  "displayName": "vscode-server",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.cjs",
+  "engines": {
+    "vscode": "^1.89.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "@aireview/vscode-server.helloWorld",
+        "title": "Hello World"
+      },
+      {
+        "command": "@aireview/vscode-server.startServer",
+        "title": "Start AIReview Server"
+      },
+      {
+        "command": "@aireview/vscode-server.stopServer",
+        "title": "Stop AIReview Server"
+      }
+    ],
+    "configuration": {
+      "title": "AIReview Server",
+      "properties": {
+        "@aireview/vscode-server.message": {
+          "type": "string",
+          "default": "Hello World",
+          "description": "The message to show in the notification"
+        },
+        "@aireview/vscode-server.port": {
+          "type": "number",
+          "default": 5011,
+          "description": "The port to run the AIReview server on"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsdown --env.NODE_ENV production",
+    "dev": "tsdown --watch ./src --env.NODE_ENV development",
+    "typecheck": "tsc --noEmit",
+    "vscode:prepublish": "pnpm run build"
+  },
+  "dependencies": {
+    "cors": "catalog:",
+    "express": "catalog:",
+    "ws": "catalog:"
+  },
+  "devDependencies": {
+    "@types/cors": "catalog:",
+    "@types/express": "catalog:",
+    "@types/node": "catalog:",
+    "@types/vscode": "catalog:",
+    "@types/ws": "catalog:",
+    "reactive-vscode": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:"
+  }
+}

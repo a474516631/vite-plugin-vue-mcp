@@ -1,19 +1,3 @@
-<template>
-  <div class="user-card">
-    <div class="avatar">
-      <img :src="userInfo.avatarUrl" alt="User Avatar">
-    </div>
-    <div class="user-details">
-      <h2 class="name">{{ userInfo.name }}</h2>
-      <p class="position">{{ userInfo.position }}</p>
-      <div class="email">
-        <span class="label">Email:</span>
-        <a :href="'mailto:' + userInfo.email">{{ userInfo.email }}</a>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref } from 'vue'
 
@@ -21,9 +5,29 @@ const userInfo = ref({
   name: 'John Doe',
   position: 'Senior Frontend Developer',
   email: 'john.doe@example.com',
-  avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John' 
+  avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
 })
 </script>
+
+<template>
+  <div class="user-card">
+    <div class="avatar">
+      <img :src="userInfo.avatarUrl" alt="User Avatar">
+    </div>
+    <div class="user-details">
+      <h2 class="name">
+        {{ userInfo.name }}
+      </h2>
+      <p class="position">
+        {{ userInfo.position }}
+      </p>
+      <div class="email">
+        <span class="label">Email:</span>
+        <a :href="`mailto:${userInfo.email}`">{{ userInfo.email }}</a>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .user-card {
@@ -58,8 +62,8 @@ const userInfo = ref({
 }
 
 .position {
-  color: #ff0000;
-  font-size: 1.8rem;
+  color: #42b883;
+  font-size: 1.1rem;
   margin: 8px 0;
   font-weight: 500;
 }

@@ -1,7 +1,44 @@
+<script setup lang="ts">
+import { computed, reactive, ref } from 'vue'
+
+const title = ref('Dashboard')
+const visitorCount = ref(0)
+const newTodo = ref('')
+
+const userInfo = reactive({
+  name: '',
+  age: 0,
+})
+
+const todos = ref([
+  { id: 1, text: 'Learn Vue 3 Composition API', completed: false },
+  { id: 2, text: 'Master TypeScript', completed: false },
+  { id: 3, text: 'Build a Project with Vite', completed: false },
+])
+
+const isAdult = computed(() => userInfo.age >= 18)
+const completedTodosCount = computed(() => todos.value.filter(todo => todo.completed).length)
+
+function incrementVisitors() {
+  visitorCount.value++
+}
+
+function addTodo() {
+  if (newTodo.value.trim()) {
+    todos.value.push({
+      id: Date.now(),
+      text: newTodo.value,
+      completed: false,
+    })
+    newTodo.value = ''
+  }
+}
+</script>
+
 <template>
   <div class="home">
     <h1>{{ title }}</h1>
-    
+
     <div class="welcome-section">
       <div class="hero">
         <h2>Welcome to Our Platform</h2>
@@ -11,7 +48,9 @@
         <div class="stat-card">
           <h3>Visitors</h3>
           <p>{{ visitorCount }}</p>
-          <button @click="incrementVisitors" class="btn-primary">Add Visitor</button>
+          <button class="btn-primary" @click="incrementVisitors">
+            Add Visitor
+          </button>
         </div>
       </div>
     </div>
@@ -36,19 +75,21 @@
     <div class="todo-section">
       <h2>Task Manager</h2>
       <div class="todo-input">
-        <input 
-          v-model="newTodo" 
-          @keyup.enter="addTodo" 
+        <input
+          v-model="newTodo"
           placeholder="Add new task"
           class="task-input"
+          @keyup.enter="addTodo"
         >
-        <button @click="addTodo" class="btn-primary">Add Task</button>
+        <button class="btn-primary" @click="addTodo">
+          Add Task
+        </button>
       </div>
       <ul class="todo-list">
         <li v-for="todo in todos" :key="todo.id" class="todo-item">
           <label class="checkbox-container">
-            <input type="checkbox" v-model="todo.completed">
-            <span class="checkmark"></span>
+            <input v-model="todo.completed" type="checkbox">
+            <span class="checkmark" />
           </label>
           <span :class="{ completed: todo.completed }">{{ todo.text }}</span>
         </li>
@@ -59,43 +100,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
-
-const title = ref('Dashboard')
-const visitorCount = ref(0)
-const newTodo = ref('')
-
-const userInfo = reactive({
-  name: '',
-  age: 0
-})
-
-const todos = ref([
-  { id: 1, text: 'Learn Vue 3 Composition API', completed: false },
-  { id: 2, text: 'Master TypeScript', completed: false },
-  { id: 3, text: 'Build a Project with Vite', completed: false }
-])
-
-const isAdult = computed(() => userInfo.age >= 18)
-const completedTodosCount = computed(() => todos.value.filter(todo => todo.completed).length)
-
-const incrementVisitors = () => {
-  visitorCount.value++
-}
-
-const addTodo = () => {
-  if (newTodo.value.trim()) {
-    todos.value.push({
-      id: Date.now(),
-      text: newTodo.value,
-      completed: false
-    })
-    newTodo.value = ''
-  }
-}
-</script>
 
 <style scoped>
 .home {
@@ -247,4 +251,4 @@ input:focus {
   text-align: right;
   color: #666;
 }
-</style> 
+</style>

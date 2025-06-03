@@ -3,6 +3,19 @@ import type { RpcFunctions, UIReviewElement, VueMcpContext } from './types'
 // 存储UI走查元素的临时变量
 let _uiReviewElements: UIReviewElement[] = []
 
+// AI编辑请求接口
+export interface AIEditRequest {
+  filePath: string
+  prompt: string
+}
+
+// AI编辑结果接口
+export interface AIEditResult {
+  success: boolean
+  message?: string
+  error?: string
+}
+
 export function createServerRpc(ctx: VueMcpContext): RpcFunctions {
   return {
     // component tree
@@ -63,6 +76,34 @@ export function createServerRpc(ctx: VueMcpContext): RpcFunctions {
         ctx.hooks.callHook(_.event, '[]')
       }
       return {}
+    },
+
+    // 处理AI编辑请求
+    handleAIEdit: async (request: AIEditRequest): Promise<AIEditResult> => {
+      try {
+        console.log('接收到AI编辑请求:', request)
+        // 触发钩子，通知VSCode扩展处理此请求
+        ctx.hooks.callHook('ai-edit-request', JSON.stringify(request))
+
+        // 这里可以添加更多逻辑，例如记录请求、验证文件路径等
+
+        return {
+          success: true,
+          message: '已成功发送AI编辑请求到VSCode扩展',
+        }
+      }
+      catch (error) {
+        console.error('处理AI编辑请求失败:', error)
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : String(error),
+        }
+      }
+    },
+
+    // 接收AI编辑结果
+    onAIEditResult: (event: string, data: string) => {
+      ctx.hooks.callHook(event, data)
     },
   }
 }

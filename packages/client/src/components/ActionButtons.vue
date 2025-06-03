@@ -1,12 +1,6 @@
 <template>
   <div class="vue-mcp-actions">
-    <button 
-      type="button" 
-      class="vue-mcp-btn"
-      @click="$emit('add')"
-    >
-      添加当前元素
-    </button>
+
     <button 
       type="button" 
       class="vue-mcp-btn vue-mcp-btn-secondary"
@@ -21,13 +15,25 @@
     >
       清空
     </button>
+    <button 
+      type="button" 
+      class="vue-mcp-btn vue-mcp-btn-primary"
+      :class="{ 'vue-mcp-btn-disabled': disabledSubmit }"
+      :disabled="disabledSubmit"
+      @click="$emit('submit')"
+    >
+      {{ disabledSubmit ? '全部已提交' : '提交' }}
+    </button>
   </div>
 </template>
 
 <script setup lang="ts">
+const { disabledSubmit = false } = defineProps<{
+  disabledSubmit?: boolean
+}>()
 // Emits
 defineEmits<{
-  (e: 'add'): void
+  (e: 'submit'): void
   (e: 'refresh'): void
   (e: 'clear'): void
 }>()
@@ -36,7 +42,7 @@ defineEmits<{
 <style scoped>
 .vue-mcp-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-top: 12px;
 }
 
@@ -59,5 +65,11 @@ defineEmits<{
   background: none;
   color: #4f46e5;
   cursor: pointer;
+}
+
+.vue-mcp-btn-disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 </style> 

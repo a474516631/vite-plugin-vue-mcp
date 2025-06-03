@@ -1,10 +1,14 @@
 {
-  "timestamp": "2025-06-01T04:58:47.611Z",
+  "timestamp": "2025-06-03T09:48:02.880Z",
   "elements": [
     {
-      "name": "div",
-      "path": "/Users/ycteng/workspace/zyb/vite-plugin-vue-mcp/playground/src/components/UserInfo.vue:3:5",
-      "comment": "测试"
+      "name": "h2",
+      "path": "/Users/ycteng/workspace/zyb/vite-plugin-vue-mcp/playground/src/components/NumberCount.vue:27:5",
+      "comment": "字体颜色需要改为红色的醒目颜色",
+      "screenshot": "screenshots/screenshot-0-2025-06-03T09-48-02-876Z.png",
+      "stableId": "{\"tagName\":\"h2\",\"classList\":[\"title\"],\"textContent\":\"Count Component\",\"domPath\":\"div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h2:nth-child(1)\"}",
+      "isSubmitted": false,
+      "isFixed": true
     }
   ]
 }

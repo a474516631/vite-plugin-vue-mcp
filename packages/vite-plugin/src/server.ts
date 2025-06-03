@@ -26,7 +26,7 @@ export function createMcpServerDefault(
 
   // 保存配置
   const saveConfig = options.uiReviewSave || { enabled: false }
-  const saveDir = saveConfig.directory || '.vue-mcp/ui-review'
+  const saveDir = saveConfig.directory || '.ui-review'
   const saveInterval = saveConfig.autoSaveInterval || 0
   let _saveTimer: NodeJS.Timeout | null = null
 
@@ -163,7 +163,7 @@ export function createMcpServerDefault(
   loadUIReviewElements()
 
   // 监听UI评审元素更新
-  ctx.hooks.hook('ui-review-elements-updated', (data) => {
+  ctx.hooks.hook('ui-review-elements-updated', (data: any) => {
     try {
       uiReviewElements = JSON.parse(data)
 
@@ -187,7 +187,7 @@ export function createMcpServerDefault(
     async () => {
       return new Promise((resolve) => {
         const eventName = nanoid()
-        ctx.hooks.hookOnce(eventName, (res) => {
+        ctx.hooks.hookOnce(eventName, (res: any) => {
           resolve({
             content: [{
               type: 'text',
@@ -209,7 +209,7 @@ export function createMcpServerDefault(
     async ({ componentName }) => {
       return new Promise((resolve) => {
         const eventName = nanoid()
-        ctx.hooks.hookOnce(eventName, (res) => {
+        ctx.hooks.hookOnce(eventName, (res: any) => {
           resolve({
             content: [{
               type: 'text',
@@ -271,7 +271,7 @@ export function createMcpServerDefault(
     async () => {
       return new Promise((resolve) => {
         const eventName = nanoid()
-        ctx.hooks.hookOnce(eventName, (res) => {
+        ctx.hooks.hookOnce(eventName, (res: any) => {
           resolve({
             content: [{
               type: 'text',
@@ -293,7 +293,7 @@ export function createMcpServerDefault(
     async ({ storeName }) => {
       return new Promise((resolve) => {
         const eventName = nanoid()
-        ctx.hooks.hookOnce(eventName, (res) => {
+        ctx.hooks.hookOnce(eventName, (res: any) => {
           resolve({
             content: [{
               type: 'text',
@@ -314,7 +314,7 @@ export function createMcpServerDefault(
     async () => {
       return new Promise((resolve) => {
         const eventName = nanoid()
-        ctx.hooks.hookOnce(eventName, (res) => {
+        ctx.hooks.hookOnce(eventName, (res: any) => {
           resolve({
             content: [{
               type: 'text',

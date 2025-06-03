@@ -1,7 +1,13 @@
 <template>
-  <li :class="['vue-mcp-element-item', { 'vue-mcp-suggestion': isSuggestion }]">
+  <li :class="['vue-mcp-element-item', { 'vue-mcp-suggestion': isSuggestion, 'vue-mcp-submitted': element.isSubmitted, 'vue-mcp-fixed': element.isFixed }]">
     <div class="vue-mcp-element-content">
-      <div class="vue-mcp-element-name">{{ element.name }}</div>
+      <div class="vue-mcp-element-name">
+        {{ element.name }}
+        <div class="vue-mcp-element-status">
+          <span v-if="element.isSubmitted" class="vue-mcp-status-badge vue-mcp-status-submitted">已提交</span>
+          <span v-if="element.isFixed" class="vue-mcp-status-badge vue-mcp-status-fixed">已修复</span>
+        </div>
+      </div>
       <div class="vue-mcp-element-path">{{ element.path }}</div>
       <div v-if="element.comment" class="vue-mcp-element-comment">
         <span class="vue-mcp-comment-icon">💬</span>
@@ -29,6 +35,24 @@
           @click="$emit('comment', element.path)"
         >
           💬
+        </button>
+        <button 
+          type="button"
+          class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-icon"
+          :class="{'vue-mcp-btn-success': element.isSubmitted}"
+          :title="element.isSubmitted ? '取消提交' : '标记为已提交'"
+          @click="$emit('toggleSubmit', element.path)"
+        >
+          ✓
+        </button>
+        <button 
+          type="button"
+          class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-icon"
+          :class="{'vue-mcp-btn-success': element.isFixed}"
+          :title="element.isFixed ? '取消修复' : '标记为已修复'"
+          @click="$emit('toggleFixed', element.path)"
+        >
+          🔧
         </button>
         <button 
           type="button"
@@ -60,6 +84,8 @@ interface ElementInfo {
   type?: string;
   comment?: string;
   screenshot?: string;
+  isSubmitted?: boolean;
+  isFixed?: boolean;
 }
 
 interface Props {
@@ -75,6 +101,8 @@ defineEmits<{
   (e: 'remove', path: string): void;
   (e: 'add', element: ElementInfo): void;
   (e: 'comment', path: string): void;
+  (e: 'toggleSubmit', path: string): void;
+  (e: 'toggleFixed', path: string): void;
 }>();
 
 // 查看截图
@@ -125,6 +153,15 @@ function viewScreenshot(screenshot: string) {
   border-left: 3px solid #4f46e5;
 }
 
+.vue-mcp-element-item.vue-mcp-submitted {
+  border-left: 3px solid #10b981;
+}
+
+.vue-mcp-element-item.vue-mcp-fixed {
+  border-left: 3px solid #3b82f6;
+  background: #f0f9ff;
+}
+
 .vue-mcp-element-content {
   flex: 1;
   min-width: 0;
@@ -137,6 +174,29 @@ function viewScreenshot(screenshot: string) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vue-mcp-element-status {
+  display: flex;
+  gap: 4px;
+}
+
+.vue-mcp-status-badge {
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  color: white;
+}
+
+.vue-mcp-status-submitted {
+  background-color: #10b981;
+}
+
+.vue-mcp-status-fixed {
+  background-color: #3b82f6;
 }
 
 .vue-mcp-element-path {
@@ -217,5 +277,9 @@ function viewScreenshot(screenshot: string) {
   align-items: center;
   justify-content: center;
   padding: 0;
+}
+
+.vue-mcp-btn-success {
+  background-color: #10b981;
 }
 </style> 

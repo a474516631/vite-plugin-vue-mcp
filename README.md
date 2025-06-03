@@ -1,4 +1,4 @@
-# vite-plugin-vue-mcp
+# aireview
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
@@ -7,17 +7,25 @@
 
 Vite plugin that enables a MCP server for your Vue app to provide information about the component tree, state, routes, and pinia tree and state.
 
+## 项目结构 📁
+
+本项目采用 monorepo 结构，包含以下子包：
+
+- `@aireview/vite-plugin`: Vite 插件核心功能
+- `packages/client`: 客户端代码
+- `packages/vscode-extension`: VSCode 扩展
+
 ## Installation 📦
 
 ```bash
-pnpm install vite-plugin-vue-mcp -D
+pnpm install aireview -D
 ```
 
 ## Usage 🔨
 
 ```ts
 // vite.config.ts
-import { VueMcp } from 'vite-plugin-vue-mcp'
+import { VueMcp } from 'aireview'
 
 export default defineConfig({
   plugins: [VueMcp()],
@@ -134,6 +142,29 @@ export interface VueMcpOptions {
 
 ![pinia-state](./screenshots/pinia-state.gif)
 
+### AI 编辑支持
+
+通过 VSCode 扩展和 Vite 插件的通信，支持在浏览器中直接触发 AI 编辑功能，修复问题。
+
+## 开发 💻
+
+```bash
+# 安装依赖
+pnpm install
+
+# 构建客户端
+pnpm build:client
+
+# 构建 vite 插件
+pnpm build:vite-plugin
+
+# 构建所有
+pnpm build:all
+
+# 运行示例
+pnpm play
+```
+
 ## Architecture ⚡️
 
 ![architecture](./screenshots/architecture.png)
@@ -152,11 +183,11 @@ This project is inspired by [vite-plugin-mcp](https://github.com/antfu/nuxt-mcp/
 
 <!-- Badges -->
 
-[npm-version-src]: https://img.shields.io/npm/v/vite-plugin-vue-mcp?style=flat&colorA=080f12&colorB=1fa669
-[npm-version-href]: https://npmjs.com/package/vite-plugin-vue-mcp
-[npm-downloads-src]: https://img.shields.io/npm/dm/vite-plugin-vue-mcp?style=flat&colorA=080f12&colorB=1fa669
-[npm-downloads-href]: https://npmjs.com/package/vite-plugin-vue-mcp
-[bundle-src]: https://img.shields.io/bundlephobia/minzip/vite-plugin-vue-mcp?style=flat&colorA=080f12&colorB=1fa669&label=minzip
-[bundle-href]: https://bundlephobia.com/result?p=vite-plugin-vue-mcp
-[license-src]: https://img.shields.io/github/license/webfansplz/vite-plugin-vue-mcp.svg?style=flat&colorA=080f12&colorB=1fa669
-[license-href]: https://github.com/webfansplz/vite-plugin-vue-mcp/blob/main/LICENSE
+[npm-version-src]: https://img.shields.io/npm/v/aireview?style=flat&colorA=080f12&colorB=1fa669
+[npm-version-href]: https://npmjs.com/package/aireview
+[npm-downloads-src]: https://img.shields.io/npm/dm/aireview?style=flat&colorA=080f12&colorB=1fa669
+[npm-downloads-href]: https://npmjs.com/package/aireview
+[bundle-src]: https://img.shields.io/bundlephobia/minzip/aireview?style=flat&colorA=080f12&colorB=1fa669&label=minzip
+[bundle-href]: https://bundlephobia.com/result?p=aireview
+[license-src]: https://img.shields.io/github/license/webfansplz/aireview.svg?style=flat&colorA=080f12&colorB=1fa669
+[license-href]: https://github.com/webfansplz/aireview/blob/main/LICENSE

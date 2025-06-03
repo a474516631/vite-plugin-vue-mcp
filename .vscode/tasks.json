@@ -1,0 +1,58 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "构建 VSCode 扩展",
+      "type": "shell",
+      "command": "source ~/.nvm/nvm.sh && nvm use 22 && cd ${workspaceFolder}/packages/vscode-server && pnpm run build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": "$tsc-watch"
+    },
+    {
+      "label": "监视 VSCode 扩展",
+      "type": "shell",
+      "command": "source ~/.nvm/nvm.sh && nvm use 22 && cd ${workspaceFolder}/packages/vscode-server && pnpm run dev",
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": {
+        "owner": "typescript",
+        "fileLocation": ["relative", "${workspaceFolder}/packages/vscode-server"],
+        "pattern": {
+          "regexp": "^([^\\s].*)\\((\\d+|\\d+,\\d+|\\d+,\\d+,\\d+,\\d+)\\):\\s+(error|warning|info)\\s+(TS\\d+)\\s*:\\s*(.*)$",
+          "file": 1,
+          "location": 2,
+          "severity": 3,
+          "code": 4,
+          "message": 5
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*tsdown.*$",
+          "endsPattern": "^.*Watching for changes.*$"
+        }
+      }
+    },
+    {
+      "label": "使用 npm 构建 VSCode 扩展",
+      "type": "shell",
+      "command": "cd ${workspaceFolder}/packages/vscode-server && npm run build",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": "$tsc-watch"
+    }
+  ]
+}

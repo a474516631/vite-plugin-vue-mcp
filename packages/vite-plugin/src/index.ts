@@ -7,21 +7,28 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import c from 'ansis'
 import htmlTags from 'html-tags'
+// 导入fetch API，确保在Node.js环境中可用
+import nodeFetch from 'node-fetch'
 import { join } from 'pathe'
 import { normalizePath, searchForWorkspaceRoot } from 'vite'
 import { createRPCServer } from 'vite-dev-rpc'
 import { setupRoutes } from './connect'
 import { createVueMcpContext } from './context'
 import { getSourceWithSourceCodeLocation } from './getSourceWithSourceCodeLocation'
+
 import { createServerRpc } from './rpc'
 
 function getVueMcpPath(): string {
   const pluginPath = normalizePath(path.dirname(fileURLToPath(import.meta.url)))
-  return pluginPath.replace(/\/dist$/, '/\/src')
+  console.log('pluginPath', pluginPath)
+  return pluginPath
 }
 const vueMcpResourceSymbol = '?__vue-mcp-resource'
 const vueClickToComponentClientId = 'virtual:vue-click-to-component/client'
 const resolvedVueClickToComponentClientId = `\0${vueClickToComponentClientId}`
+
+// 使用适当的fetch实现（浏览器原生fetch或node-fetch）
+const fetchImpl = typeof fetch !== 'undefined' ? fetch : nodeFetch
 
 export function VueMcp(options: VueMcpOptions = {}): Plugin {
   const {
@@ -52,7 +59,7 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
       const rpc = createServerRpc(ctx)
 
       const rpcServer = createRPCServer<RpcFunctions, any>(
-        'vite-plugin-vue-mcp',
+        'aireview',
         vite.ws,
         rpc,
         {
@@ -150,6 +157,84 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
         res.end('Method Not Allowed')
       })
 
+      // 添加AI编辑API路由
+      vite.middlewares.use(`${mcpPath}/api/ai-edit`, async (req, res) => {
+        // 处理POST请求 - 接收AI编辑请求
+        if (req.method === 'POST') {
+          try {
+            // 读取请求体数据
+            const chunks: Buffer[] = []
+            for await (const chunk of req) {
+              chunks.push(Buffer.from(chunk))
+            }
+            const data = Buffer.concat(chunks).toString('utf-8')
+            const requestData = JSON.parse(data)
+
+            // 验证请求数据
+            // if (!requestData.prompt) {
+            //   res.statusCode = 400
+            //   res.setHeader('Content-Type', 'application/json')
+            //   res.end(JSON.stringify({
+            //     success: false,
+            //     error: '缺少必要参数: prompt',
+            //   }))
+            //   return
+            // }
+
+            // 调用RPC函数处理AI编辑请求
+            // const result = await ctx.rpc.handleAIEdit({
+            //   filePath: requestData.filePath || '',
+            //   prompt: requestData.prompt,
+            // })
+
+            // 同时向VSCode插件发送HTTP请求
+            try {
+              // 默认VSCode插件服务器地址
+              const vscodeServerUrl = 'http://localhost:5011/ai-edit'
+              const aiReviewJsonDirectory = options.uiReviewSave?.directory || '.ui-review'
+              const fullPath = path.resolve(vite.config.root, aiReviewJsonDirectory, 'ui-review.json')
+
+              // 发送HTTP请求到VSCode插件
+              const response = await fetchImpl(vscodeServerUrl, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  aiReviewJsonPath: fullPath,
+                  prompt: requestData.prompt || '',
+                }),
+              })
+
+              const responseData = await response.json()
+              console.log('VSCode插件响应:', responseData)
+            }
+            catch (error) {
+              console.error('向VSCode插件发送请求失败:', error)
+              // 失败不影响正常流程，因为可能VSCode插件未启动
+            }
+
+            res.statusCode = 200
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({ success: true }))
+          }
+          catch (error) {
+            console.error('处理AI编辑请求失败:', error)
+            res.statusCode = 500
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : String(error),
+            }))
+          }
+          return
+        }
+
+        // 其他HTTP方法不允许
+        res.statusCode = 405
+        res.end('Method Not Allowed')
+      })
+
       const port = vite.config.server.port || 5173
       const root = searchForWorkspaceRoot(vite.config.root)
 
@@ -199,7 +284,7 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
       if (id === resolvedVueClickToComponentClientId) {
         // 使用新的客户端包
         try {
-          const clientPath = path.resolve(fileURLToPath(import.meta.url), '../../packages/client/dist/vue-mcp-client.js')
+          const clientPath = path.resolve(fileURLToPath(import.meta.url), '../../../client/dist/vue-mcp-client.js')
 
           if (existsSync(clientPath)) {
             return await fs.readFile(clientPath, 'utf-8')
@@ -215,7 +300,7 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
       }
       // css
       if (id === `${resolvedVueClickToComponentClientId}.css`) {
-        const clientPath = path.resolve(fileURLToPath(import.meta.url), '../../packages/client/dist/vue-mcp-client.css')
+        const clientPath = path.resolve(fileURLToPath(import.meta.url), '../../../client/dist/vue-mcp-client.css')
         if (existsSync(clientPath)) {
           return await fs.readFile(clientPath, 'utf-8')
         }
@@ -234,10 +319,10 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
           (typeof appendTo === 'string' && filename.endsWith(appendTo))
           || (appendTo instanceof RegExp && appendTo.test(filename)))) {
         if (enableClickToComponent) {
-          code = `import 'virtual:vue-mcp-path:overlay.js';\nimport '${vueClickToComponentClientId}';\nimport '${vueClickToComponentClientId}.css';\n${code}`
+          code = `import 'virtual:vue-mcp-path:overlay.mjs';\nimport '${vueClickToComponentClientId}';\nimport '${vueClickToComponentClientId}.css';\n${code}`
         }
         else {
-          code = `import 'virtual:vue-mcp-path:overlay.js';\n${code}`
+          code = `import 'virtual:vue-mcp-path:overlay.mjs';\n${code}`
         }
       }
 

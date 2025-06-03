@@ -7,13 +7,14 @@
     "dev": "DEBUG=vite:mcp:server vite"
   },
   "dependencies": {
+    "@aireview/vite-plugin": "workspace:*",
     "pinia": "catalog:",
-    "vite-plugin-vue-mcp": "workspace:*",
     "vue": "catalog:",
     "vue-router": "catalog:"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "catalog:",
+    "vite": "catalog:",
     "vite-plugin-vue-devtools": "catalog:"
   }
 }
