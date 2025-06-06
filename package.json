@@ -1,7 +1,7 @@
 {
   "name": "aireview",
   "type": "module",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "packageManager": "pnpm@10.6.2",
   "description": "MCP server helping models to understand your Vue app better.",
   "author": "Arlo <webfansplz@gmail.com>",
@@ -49,7 +49,7 @@
     "dev:vite-plugin": "pnpm -C packages/vite-plugin dev",
     "play": "pnpm build:client && pnpm build:vite-plugin && pnpm -C playground dev",
     "prepublishOnly": "pnpm build:all",
-    "release": "nr build:all && bumpp patch && pnpm publish --no-git-checks",
+    "release": "nr build:all && bumpp patch && pnpm publish -r  --no-git-checks",
     "lint": "eslint"
   },
   "peerDependencies": {
