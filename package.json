@@ -1,7 +1,7 @@
 {
   "name": "aireview",
   "type": "module",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "packageManager": "pnpm@10.6.2",
   "description": "MCP server helping models to understand your Vue app better.",
   "author": "Arlo <webfansplz@gmail.com>",
