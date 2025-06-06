@@ -3,6 +3,7 @@ import { ref, watch } from 'vue'
 
 const count = ref(0)
 const animating = ref(false)
+const isCardClicked = ref(false)
 
 function increase() {
   count.value++
@@ -20,10 +21,14 @@ function triggerAnimation() {
     animating.value = false
   }, 500) // 动画持续时间调整为500ms，与CSS中的动画时间一致
 }
+
+function toggleCardBackground() {
+  isCardClicked.value = !isCardClicked.value
+}
 </script>
 
 <template>
-  <div class="count-card">
+  <div class="count-card" :class="{ clicked: isCardClicked }" @click="toggleCardBackground">
     <h2 class="title">
       Count Component
     </h2>
@@ -31,10 +36,10 @@ function triggerAnimation() {
       {{ count }}
     </div>
     <div class="button-group">
-      <button class="btn" @click="decrease">
+      <button class="btn" @click.stop="decrease">
         -
       </button>
-      <button class="btn" @click="increase">
+      <button class="btn" @click.stop="increase">
         +
       </button>
     </div>
@@ -49,11 +54,18 @@ function triggerAnimation() {
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
   width: 300px;
   text-align: center;
-  transition: box-shadow 0.3s ease;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.count-card.clicked {
+  background: #e8f5e9;
+  box-shadow: 0 12px 20px rgba(76, 175, 80, 0.3);
 }
 
 .count-card:hover {
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
+  background: #e8f5e9;
+  box-shadow: 0 12px 20px rgba(76, 175, 80, 0.3);
 }
 
 .title {

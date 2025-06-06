@@ -287,24 +287,17 @@ const commentElement = (path: string) => {
 const sendDataToMcpService = () => {
   try {
     // 检查是否存在window.__VUE_MCP_RPC__对象
+    // 显示保存中状态
+    saveStatus.value = {
+      type: 'success',
+      message: '正在保存...',
+      timestamp: Date.now()
+    }
     const mcpRpc = (window as any).__VUE_MCP_RPC__
     if (mcpRpc && typeof mcpRpc.sendUIReviewElements === 'function') {
       // 发送已选择的元素数据
       mcpRpc.sendUIReviewElements(selectedElements.value)
-      
-      // 显示保存中状态
-      saveStatus.value = {
-        type: 'success',
-        message: '正在保存...',
-        timestamp: Date.now()
-      }
-      
-      // 3秒后清除状态提示
-      setTimeout(() => {
-        if (saveStatus.value && saveStatus.value.timestamp + 3000 < Date.now()) {
-          saveStatus.value = null
-        }
-      }, 3000)
+      saveStatus.value = null
     } else {
       console.warn('MCP RPC 服务不可用，无法发送数据')
       
@@ -328,9 +321,11 @@ const sendDataToMcpService = () => {
 }
 
 // 更新监听已选择元素的变化，自动发送数据，同时更新稳定ID
-watch(selectedElements, (newElements) => {
+watch(()=>{
+  return JSON.stringify(selectedElements.value)
+}, () => {
   // 为没有稳定ID的元素添加稳定ID
-  updateElementsWithStableId(newElements)
+  updateElementsWithStableId(selectedElements.value)
   
   // 发送数据到MCP服务
   sendDataToMcpService()

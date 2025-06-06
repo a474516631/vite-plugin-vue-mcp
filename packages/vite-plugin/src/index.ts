@@ -94,7 +94,6 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
               const uiReviewElements = await fs.readFile(elementViewPath, 'utf-8')
               fileResult = JSON.parse(uiReviewElements)
             }
-            console.log('elements', fileResult)
             // 这里需要处理截图，转换为 base64 字符串
             for (const element of fileResult.elements) {
               if (element.screenshot) {

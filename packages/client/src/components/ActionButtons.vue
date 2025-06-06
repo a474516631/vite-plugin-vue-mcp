@@ -22,7 +22,7 @@
       :disabled="disabledSubmit"
       @click="$emit('submit')"
     >
-      {{ disabledSubmit ? '全部已提交' : '提交' }}
+      {{ disabledSubmit ? '全部已提交' : '提交给 AI 自动修复' }}
     </button>
   </div>
 </template>

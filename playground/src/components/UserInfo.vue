@@ -62,7 +62,7 @@ const userInfo = ref({
 }
 
 .position {
-  color: #42b883;
+  color: #4CAF50;
   font-size: 1.1rem;
   margin: 8px 0;
   font-weight: 500;

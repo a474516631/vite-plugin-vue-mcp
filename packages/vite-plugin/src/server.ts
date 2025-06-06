@@ -7,6 +7,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { nanoid } from 'nanoid'
 import { z } from 'zod'
 import { version } from '../package.json'
+import { createHash } from 'node:crypto'
 
 export function createMcpServerDefault(
   options: VueMcpOptions,
@@ -64,21 +65,41 @@ export function createMcpServerDefault(
       // 保存元素数据的深拷贝，避免修改原始数据
       const elementsToSave = JSON.parse(JSON.stringify(uiReviewElements))
 
+      // 图片哈希映射表，用于避免重复存储相同的图片
+      const imageHashMap = new Map<string, string>()
+
       // 处理截图数据，将base64数据保存为文件
       for (let i = 0; i < elementsToSave.length; i++) {
         const element = elementsToSave[i]
         if (element.screenshot) {
           // 从base64提取图片数据
           const base64Data = element.screenshot.replace(/^data:image\/png;base64,/, '')
-          // 生成文件名
-          const filename = `screenshot-${i}-${timestamp}.png`
-          const filePath = path.join(fullPath, 'screenshots', filename)
-
-          // 保存图片文件
-          await fs.writeFile(filePath, base64Data, 'base64')
+          
+          // 计算图片数据的哈希值作为唯一标识
+          const imageHash = createHash('md5').update(base64Data).digest('hex')
+          
+          // 检查是否已经保存过相同的图片
+          let imagePath = imageHashMap.get(imageHash)
+          
+          if (!imagePath) {
+            // 生成文件名（使用哈希值）
+            const filename = `screenshot-${imageHash}.png`
+            const filePath = path.join(fullPath, 'screenshots', filename)
+            
+            // 检查文件是否已存在
+            if (!existsSync(filePath)) {
+              // 保存图片文件
+              await fs.writeFile(filePath, base64Data, 'base64')
+              console.log(`保存新截图: ${filename}`)
+            }
+            
+            // 记录哈希值对应的路径
+            imagePath = `screenshots/${filename}`
+            imageHashMap.set(imageHash, imagePath)
+          }
 
           // 更新元素中的截图路径为相对路径
-          element.screenshot = `screenshots/${filename}`
+          element.screenshot = imagePath
         }
       }
 
@@ -90,7 +111,7 @@ export function createMcpServerDefault(
       }, null, 2))
 
       // 记录保存成功信息
-      console.error(`UI评审数据已保存到: ${jsonPath}`)
+      console.log(`UI评审数据已保存到: ${jsonPath}`)
     }
     catch (err) {
       console.error('保存UI评审数据失败:', err)

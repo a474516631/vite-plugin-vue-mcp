@@ -1,9 +1,12 @@
 // 设置目标元素的高亮标记
 export function setTarget(el: Element, type = ''): void {
+  if(el.hasAttribute(ignoreKey)){
+    return
+  }
+  cleanTarget()
   el.setAttribute('vue-click-to-component-target', type)
-
-  // 当设置高亮时，显示 padding/margin，但只在没有现有盒模型显示时
-  if (type && !document.getElementById('vue-mcp-box-model-container')) {
+  // 当设置高亮时，显示盒模型
+  if (type) {
     showBoxModel(el as HTMLElement)
   }
 }
@@ -27,8 +30,6 @@ export function cleanTarget(type?: string): void {
     el.removeAttribute('vue-click-to-component-target')
   })
 
-  // 清除盒模型显示
-  removeBoxModelDisplay()
 }
 
 // 检查是否应该处理 Alt 点击事件
@@ -160,12 +161,39 @@ export function getComponentInfoList(elList: (HTMLElement | Element)[]): Compone
 
   return componentInfoList
 }
-
+let lastShowBoxModelElement: HTMLElement | null = null
+const ignoreKey = 'ai-review-inspect-element-ignore'
 // 显示元素的盒模型（padding/margin）
 export function showBoxModel(element: HTMLElement): void {
-  removeBoxModelDisplay() // 先移除已有的显示
-  if (!element)
+  
+  if (!element || lastShowBoxModelElement === element)
     return
+
+  lastShowBoxModelElement = element
+  // 检查是否已存在盒模型容器
+  let container = document.getElementById('vue-mcp-box-model-container')
+  const isNewContainer = !container
+
+  if (isNewContainer) {
+    // 如果不存在，创建新容器
+    container = document.createElement('div')
+    container.id = 'vue-mcp-box-model-container'
+    container.style.position = 'fixed'
+    container.style.pointerEvents = 'none' // 确保容器不捕获鼠标事件
+    container.style.zIndex = '99999'
+    container.style.top = '0'
+    container.style.left = '0'
+    container.setAttribute(ignoreKey,'true')
+    document.body.appendChild(container)
+  } else if (container) {
+    // 如果存在，清空内容并显示
+    container.innerHTML = ''
+    container.style.display = 'block'
+    container.style.pointerEvents = 'none'
+  }
+
+  // 确保container非空
+  if (!container) return;
 
   const rect = element.getBoundingClientRect()
   const computedStyle = window.getComputedStyle(element)
@@ -182,14 +210,8 @@ export function showBoxModel(element: HTMLElement): void {
   const marginBottom = Number.parseInt(computedStyle.marginBottom, 10)
   const marginLeft = Number.parseInt(computedStyle.marginLeft, 10)
 
-  // 创建覆盖层容器
-  const container = document.createElement('div')
-  container.id = 'vue-mcp-box-model-container'
-  container.style.position = 'fixed'
-  container.style.pointerEvents = 'none'
-  container.style.zIndex = '99999'
-  container.style.top = '0'
-  container.style.left = '0'
+  // 创建元素本身的高亮区域
+  createElementHighlight(container, rect, element, computedStyle)
 
   // 创建 padding 高亮区域
   if (paddingTop || paddingRight || paddingBottom || paddingLeft) {
@@ -210,8 +232,65 @@ export function showBoxModel(element: HTMLElement): void {
       left: marginLeft,
     }, 'margin')
   }
+}
 
-  document.body.appendChild(container)
+// 创建元素本身的高亮显示
+function createElementHighlight(
+  container: HTMLElement,
+  rect: DOMRect,
+  element: HTMLElement,
+  computedStyle: CSSStyleDeclaration,
+): void {
+  const elementEl = document.createElement('div')
+  elementEl.className = 'vue-mcp-box-model-highlight vue-mcp-element'
+  elementEl.style.position = 'fixed'
+  elementEl.style.top = `${rect.top}px`
+  elementEl.style.left = `${rect.left}px`
+  elementEl.style.width = `${rect.width}px`
+  elementEl.style.height = `${rect.height}px`
+  elementEl.style.backgroundColor = 'rgba(111, 168, 220, 0.25)'
+  elementEl.style.border = '1px dashed rgba(111, 168, 220, 0.8)'
+  elementEl.style.boxSizing = 'border-box'
+  elementEl.style.userSelect = 'none'
+  elementEl.style.pointerEvents = 'none' // 确保元素高亮不捕获鼠标事件
+  elementEl.setAttribute(ignoreKey,'true')
+
+  // 创建元素信息面板
+  const infoPanel = document.createElement('div')
+  infoPanel.className = 'vue-mcp-element-info-panel'
+  infoPanel.style.position = 'absolute'
+  infoPanel.style.top = '0'
+  infoPanel.style.right = '0'
+  infoPanel.style.transform = 'translateY(-100%)'
+  infoPanel.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'
+  infoPanel.style.color = 'white'
+  infoPanel.style.padding = '4px 8px'
+  infoPanel.style.borderRadius = '3px'
+  infoPanel.style.fontSize = '11px'
+  infoPanel.style.fontFamily = 'monospace'
+  infoPanel.style.whiteSpace = 'nowrap'
+  infoPanel.style.zIndex = '100000'
+  infoPanel.style.userSelect = 'none'
+  infoPanel.style.pointerEvents = 'none' // 确保信息面板不捕获鼠标事件
+
+  // 收集元素样式信息
+  const tagName = element.tagName.toLowerCase()
+  const width = Math.round(rect.width)
+  const height = Math.round(rect.height)
+  const backgroundColor = computedStyle.backgroundColor
+  const fontSize = computedStyle.fontSize
+  const color = computedStyle.color
+  const className = element.className ? `.${element.className.split(' ').join('.')}` : ''
+
+  infoPanel.innerHTML = `
+    <div><strong>${tagName}${className}</strong></div>
+    <div>尺寸: ${width}px × ${height}px</div>
+    <div>字体: ${fontSize}/${color}</div>
+    <div>背景: ${backgroundColor}</div>
+  `
+
+  elementEl.appendChild(infoPanel)
+  container.appendChild(elementEl)
 }
 
 // 创建盒模型高亮显示
@@ -223,6 +302,7 @@ function createBoxModelHighlight(
 ): void {
   const color = type === 'padding' ? 'rgba(118, 215, 254, 0.35)' : 'rgba(246, 178, 107, 0.35)'
   const textColor = type === 'padding' ? 'rgb(28, 171, 226)' : 'rgb(229, 153, 57)'
+  const borderStyle = type === 'padding' ? '1px dashed rgba(28, 171, 226, 0.8)' : '1px dashed rgba(229, 153, 57, 0.8)'
 
   // 顶部区域
   if (values.top > 0) {
@@ -234,6 +314,10 @@ function createBoxModelHighlight(
     topEl.style.left = `${type === 'padding' ? rect.left : rect.left - values.left}px`
     topEl.style.width = `${type === 'padding' ? rect.width : rect.width + values.left + values.right}px`
     topEl.style.height = `${values.top}px`
+    topEl.style.border = borderStyle
+    topEl.style.boxSizing = 'border-box'
+    topEl.style.userSelect = 'none'
+    topEl.style.pointerEvents = 'none' // 确保盒模型高亮不捕获鼠标事件
 
     // 添加数值标签
     const topLabel = document.createElement('div')
@@ -249,6 +333,8 @@ function createBoxModelHighlight(
     topLabel.style.borderRadius = '2px'
     topLabel.style.fontSize = '10px'
     topLabel.style.fontWeight = 'bold'
+    topLabel.style.userSelect = 'none'
+    topLabel.style.pointerEvents = 'none' // 确保标签不捕获鼠标事件
 
     topEl.appendChild(topLabel)
     container.appendChild(topEl)
@@ -264,7 +350,11 @@ function createBoxModelHighlight(
     rightEl.style.left = `${type === 'padding' ? rect.right - values.right : rect.right}px`
     rightEl.style.width = `${values.right}px`
     rightEl.style.height = `${type === 'padding' ? rect.height : rect.height + values.top + values.bottom}px`
-
+    rightEl.style.border = borderStyle
+    rightEl.style.boxSizing = 'border-box'
+    rightEl.style.userSelect = 'none'
+    rightEl.style.pointerEvents = 'none' // 确保盒模型高亮不捕获鼠标事件
+    rightEl.setAttribute(ignoreKey,'true')
     // 添加数值标签
     const rightLabel = document.createElement('div')
     rightLabel.className = 'vue-mcp-box-model-label'
@@ -279,6 +369,8 @@ function createBoxModelHighlight(
     rightLabel.style.borderRadius = '2px'
     rightLabel.style.fontSize = '10px'
     rightLabel.style.fontWeight = 'bold'
+    rightLabel.style.userSelect = 'none'
+    rightLabel.style.pointerEvents = 'none' // 确保标签不捕获鼠标事件
 
     rightEl.appendChild(rightLabel)
     container.appendChild(rightEl)
@@ -294,7 +386,11 @@ function createBoxModelHighlight(
     bottomEl.style.left = `${type === 'padding' ? rect.left : rect.left - values.left}px`
     bottomEl.style.width = `${type === 'padding' ? rect.width : rect.width + values.left + values.right}px`
     bottomEl.style.height = `${values.bottom}px`
-
+    bottomEl.style.border = borderStyle
+    bottomEl.style.boxSizing = 'border-box'
+    bottomEl.style.userSelect = 'none'
+    bottomEl.style.pointerEvents = 'none' // 确保盒模型高亮不捕获鼠标事件
+    bottomEl.setAttribute(ignoreKey,'true')
     // 添加数值标签
     const bottomLabel = document.createElement('div')
     bottomLabel.className = 'vue-mcp-box-model-label'
@@ -309,6 +405,9 @@ function createBoxModelHighlight(
     bottomLabel.style.borderRadius = '2px'
     bottomLabel.style.fontSize = '10px'
     bottomLabel.style.fontWeight = 'bold'
+    bottomLabel.style.userSelect = 'none'
+    bottomLabel.style.pointerEvents = 'none' // 确保标签不捕获鼠标事件
+    bottomLabel.setAttribute(ignoreKey,'true')
 
     bottomEl.appendChild(bottomLabel)
     container.appendChild(bottomEl)
@@ -324,6 +423,10 @@ function createBoxModelHighlight(
     leftEl.style.left = `${type === 'padding' ? rect.left : rect.left - values.left}px`
     leftEl.style.width = `${values.left}px`
     leftEl.style.height = `${type === 'padding' ? rect.height : rect.height + values.top + values.bottom}px`
+    leftEl.style.border = borderStyle
+    leftEl.style.boxSizing = 'border-box'
+    leftEl.style.userSelect = 'none'
+    leftEl.style.pointerEvents = 'none' // 确保盒模型高亮不捕获鼠标事件
 
     // 添加数值标签
     const leftLabel = document.createElement('div')
@@ -339,13 +442,25 @@ function createBoxModelHighlight(
     leftLabel.style.borderRadius = '2px'
     leftLabel.style.fontSize = '10px'
     leftLabel.style.fontWeight = 'bold'
+    leftLabel.style.userSelect = 'none'
+    leftLabel.style.pointerEvents = 'none' // 确保标签不捕获鼠标事件
 
     leftEl.appendChild(leftLabel)
     container.appendChild(leftEl)
   }
 }
 
-// 移除盒模型显示
+// 隐藏盒模型显示
+export function hideBoxModelDisplay(): void {
+  const container = document.getElementById('vue-mcp-box-model-container')
+  if (container) {
+    container.style.display = 'none'
+  }
+}
+
+
+
+// 完全移除盒模型显示（用于清理资源）
 export function removeBoxModelDisplay(): void {
   const container = document.getElementById('vue-mcp-box-model-container')
   if (container) {
@@ -369,6 +484,10 @@ export function initClickToComponent(): void {
     outline: 1px auto !important;
   }
 
+  [${ignoreKey}] {
+    pointer-events: none !important;
+  }
+
   @supports (outline-color: Highlight) {
     [vue-click-to-component-target] {
       outline: var(--click-to-component-outline, 1px auto Highlight) !important;
@@ -388,11 +507,12 @@ export function initClickToComponent(): void {
   window.addEventListener(
     'mousemove',
     (e) => {
-      cleanTarget('hover')
-
+    
       if (e.altKey) {
         document.body.setAttribute('vue-click-to-component', '')
-
+        if ((e.target as Element).hasAttribute(ignoreKey)) {
+          return
+        }
         const elWithSourceCodeLocation = getElWithSourceCodeLocation(e.target as Element)
 
         if (!elWithSourceCodeLocation) {
@@ -402,30 +522,14 @@ export function initClickToComponent(): void {
         setTarget(elWithSourceCodeLocation, 'hover')
       }
       else {
-        // 当不按 Alt 键时，移除属性但保留盒模型显示
-        // document.body.removeAttribute('vue-click-to-component')
-        // 不要在这里调用 cleanTarget，因为我们想保持盒模型显示直到用户明确清除
+        document.body.removeAttribute('vue-click-to-component')
+        cleanTarget()
+        hideBoxModelDisplay()
       }
     },
     true,
   )
 
-  // 键盘事件处理
-  window.addEventListener(
-    'keyup',
-    (e) => {
-      if (e.key === 'Alt') {
-        // cleanTarget()
-        // document.body.removeAttribute('vue-click-to-component')
-      }
-      else if (e.key === 'Escape') {
-        // 按下 Escape 键时清除盒模型显示
-        removeBoxModelDisplay()
-        document.body.removeAttribute('vue-click-to-component')
-      }
-    },
-    true,
-  )
 
   // 窗口失焦时清除高亮
   window.addEventListener(

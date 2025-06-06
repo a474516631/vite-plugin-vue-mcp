@@ -1,13 +1,29 @@
 {
-  "timestamp": "2025-06-03T09:48:02.880Z",
+  "timestamp": "2025-06-05T09:50:08.786Z",
   "elements": [
+    {
+      "name": "p",
+      "path": "/Users/ycteng/workspace/zyb/vite-plugin-vue-mcp/playground/src/components/UserInfo.vue:21:7",
+      "comment": "字体颜色改为主题色",
+      "screenshot": "screenshots/screenshot-def6177a09e59b514a6c100e318e8d51.png",
+      "stableId": "{\"tagName\":\"p\",\"classList\":[\"position\"],\"textContent\":\"Senior Frontend Developer\",\"domPath\":\"div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > p:nth-child(2)\"}",
+      "isSubmitted": true,
+      "isFixed": true
+    },
     {
       "name": "h2",
       "path": "/Users/ycteng/workspace/zyb/vite-plugin-vue-mcp/playground/src/components/NumberCount.vue:27:5",
-      "comment": "字体颜色需要改为红色的醒目颜色",
-      "screenshot": "screenshots/screenshot-0-2025-06-03T09-48-02-876Z.png",
+      "comment": "字体颜色改为主题色",
       "stableId": "{\"tagName\":\"h2\",\"classList\":[\"title\"],\"textContent\":\"Count Component\",\"domPath\":\"div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h2:nth-child(1)\"}",
-      "isSubmitted": false,
+      "isSubmitted": true,
+      "isFixed": true
+    },
+    {
+      "name": "h2",
+      "path": "/Users/ycteng/workspace/zyb/vite-plugin-vue-mcp/playground/src/components/NumberCount.vue:32:5",
+      "comment": "颜色应该为红色",
+      "stableId": "{\"tagName\":\"h2\",\"classList\":[\"title\"],\"textContent\":\"Count Component\",\"domPath\":\"div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h2:nth-child(1)\"}",
+      "isSubmitted": true,
       "isFixed": true
     }
   ]

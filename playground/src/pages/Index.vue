@@ -49,10 +49,6 @@ onMounted(() => {
       <div v-for="i in 20" :key="i" class="particle" :style="getParticleStyle(i)" />
     </div>
 
-    <!-- 添加AI编辑演示组件 -->
-    <div class="ai-edit-section">
-      <AIEditDemo />
-    </div>
   </div>
 </template>
 
