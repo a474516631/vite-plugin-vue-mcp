@@ -1,8 +1,8 @@
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  entry: ['src/index', 'src/overlay'],
-  format: ['cjs'],
-  target: 'node18',
+  entry: ['src/index.ts', 'src/overlay.js'],
+  format: ['cjs', 'es'],
+  target: 'node16',
   minify: false,
 })

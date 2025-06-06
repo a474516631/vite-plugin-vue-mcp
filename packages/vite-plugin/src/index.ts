@@ -318,10 +318,10 @@ export default function AiReiewVitePlugin(options: VueMcpOptions = {}): Plugin {
           (typeof appendTo === 'string' && filename.endsWith(appendTo))
           || (appendTo instanceof RegExp && appendTo.test(filename)))) {
         if (enableClickToComponent) {
-          code = `import 'virtual:vue-mcp-path:overlay.mjs';\nimport '${vueClickToComponentClientId}';\nimport '${vueClickToComponentClientId}.css';\n${code}`
+          code = `import 'virtual:vue-mcp-path:overlay.js';\nimport '${vueClickToComponentClientId}';\nimport '${vueClickToComponentClientId}.css';\n${code}`
         }
         else {
-          code = `import 'virtual:vue-mcp-path:overlay.mjs';\n${code}`
+          code = `import 'virtual:vue-mcp-path:overlay.js';\n${code}`
         }
       }
 

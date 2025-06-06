@@ -22,20 +22,20 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./packages/vite-plugin/dist/index.d.mts",
-      "import": "./packages/vite-plugin/dist/index.mjs",
+      "types": "./packages/vite-plugin/dist/index.d.ts",
+      "import": "./packages/vite-plugin/dist/index.js",
       "require": "./packages/vite-plugin/dist/index.cjs"
     },
     "./vite-plugin": {
-      "types": "./packages/vite-plugin/dist/index.d.mts",
-      "import": "./packages/vite-plugin/dist/index.mjs",
+      "types": "./packages/vite-plugin/dist/index.d.ts",
+      "import": "./packages/vite-plugin/dist/index.js",
       "require": "./packages/vite-plugin/dist/index.cjs"
     },
     "./*": "./*"
   },
   "main": "./packages/vite-plugin/dist/index.cjs",
-  "module": "./packages/vite-plugin/dist/index.mjs",
-  "types": "./packages/vite-plugin/dist/index.d.mts",
+  "module": "./packages/vite-plugin/dist/index.js",
+  "types": "./packages/vite-plugin/dist/index.d.ts",
   "files": [
     "packages/client/dist",
     "packages/vite-plugin/dist"

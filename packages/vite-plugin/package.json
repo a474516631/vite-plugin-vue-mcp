@@ -21,21 +21,21 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
     "./*": "./*"
   },
   "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "src/overlay.js"
   ],
   "scripts": {
-    "build": "unbuild",
+    "build": "tsdown",
     "dev": "unbuild --stub"
   },
   "peerDependencies": {
