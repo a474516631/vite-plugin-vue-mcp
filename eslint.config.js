@@ -13,6 +13,7 @@ export default antfu(
       'ts/no-use-before-define': 'off',
       'jsdoc/check-property-names': 'off',
       'jsdoc/check-param-names': 'off',
+      'no-unused-vars': 'off',
     },
 
   },

@@ -9,7 +9,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/main.ts'),
       name: 'VueMcpClient',
-      fileName: 'vue-mcp-client',
+      fileName: 'ai-review-client',
       formats: ['es'],
     },
     rollupOptions: {

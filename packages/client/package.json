@@ -8,9 +8,11 @@
     "build": "vue-tsc && vite build",
     "preview": "vite preview"
   },
-  "dependencies": {
-    "dom-to-image-more": "catalog:",
+  "peerDependencies": {
     "vue": "catalog:"
+  },
+  "dependencies": {
+    "dom-to-image-more": "catalog:"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "catalog:",

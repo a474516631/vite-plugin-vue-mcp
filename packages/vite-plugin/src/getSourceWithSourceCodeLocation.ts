@@ -1,6 +1,6 @@
 import { parseFragment } from 'parse5'
 
-export function getSourceWithSourceCodeLocation({
+function getSourceWithSourceCodeLocation({
   source,
   filePath,
   htmlTags,
@@ -67,9 +67,13 @@ export function getSourceWithSourceCodeLocation({
     const insertPos = startOffset + node.nodeName.length + 1
     result
       = result.substring(0, insertPos)
-        + sourceCodeLocation
-        + result.substring(insertPos)
+      + sourceCodeLocation
+      + result.substring(insertPos)
   })
 
   return result
+}
+
+export {
+  getSourceWithSourceCodeLocation,
 }

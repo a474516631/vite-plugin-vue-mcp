@@ -1,7 +1,7 @@
-import { VueMcp } from '@aireview/vite-plugin'
+import AiReviewVitePlugin from '@aireview/vite-plugin'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
-import DevTools from 'vite-plugin-vue-devtools'
+// import DevTools from 'vite-plugin-vue-devtools'
 
 export default defineConfig({
   server: {
@@ -9,7 +9,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    VueMcp({
+    AiReviewVitePlugin({
       appendTo: 'src/main.ts',
       enableClickToComponent: true,
       uiReviewSave: {
@@ -18,6 +18,6 @@ export default defineConfig({
         autoSaveInterval: 0, // 收到数据时立即保存
       },
     }),
-    DevTools(),
+    // DevTools(),
   ],
 })

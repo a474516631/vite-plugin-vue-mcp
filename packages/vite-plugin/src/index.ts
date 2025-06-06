@@ -30,7 +30,7 @@ const resolvedVueClickToComponentClientId = `\0${vueClickToComponentClientId}`
 // 使用适当的fetch实现（浏览器原生fetch或node-fetch）
 const fetchImpl = typeof fetch !== 'undefined' ? fetch : nodeFetch
 
-export function VueMcp(options: VueMcpOptions = {}): Plugin {
+export default function AiReiewVitePlugin(options: VueMcpOptions = {}): Plugin {
   const {
     mcpPath = '/__mcp',
     updateCursorMcpJson = true,
@@ -283,7 +283,7 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
       if (id === resolvedVueClickToComponentClientId) {
         // 使用新的客户端包
         try {
-          const clientPath = path.resolve(fileURLToPath(import.meta.url), '../../../client/dist/vue-mcp-client.js')
+          const clientPath = path.resolve(fileURLToPath(import.meta.url), '../../../client/dist/ai-review-client.js')
 
           if (existsSync(clientPath)) {
             return await fs.readFile(clientPath, 'utf-8')
@@ -299,7 +299,7 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
       }
       // css
       if (id === `${resolvedVueClickToComponentClientId}.css`) {
-        const clientPath = path.resolve(fileURLToPath(import.meta.url), '../../../client/dist/vue-mcp-client.css')
+        const clientPath = path.resolve(fileURLToPath(import.meta.url), '../../../client/dist/ai-review-client.css')
         if (existsSync(clientPath)) {
           return await fs.readFile(clientPath, 'utf-8')
         }
@@ -344,58 +344,58 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
 
       return code
     },
-    transformIndexHtml(html) {
-      if (options.appendTo)
-        return
+    // transformIndexHtml(html) {
+    //   if (options.appendTo)
+    //     return
 
-      const tags = [
-        {
-          tag: 'script',
-          injectTo: 'head-prepend' as const,
-          attrs: {
-            type: 'module',
-            src: `${config.base || '/'}@id/virtual:vue-mcp-path:overlay.js`,
-          },
-        },
-      ]
+    //   const tags = [
+    //     {
+    //       tag: 'script',
+    //       injectTo: 'head-prepend' as const,
+    //       attrs: {
+    //         type: 'module',
+    //         src: `${config.base || '/'}@id/virtual:vue-mcp-path:overlay.js`,
+    //       },
+    //     },
+    //   ]
 
-      // 如果启用了点击跳转组件功能，添加客户端脚本
-      if (enableClickToComponent) {
-        // 添加客户端 JS
-        tags.push({
-          tag: 'script',
-          injectTo: 'head-prepend' as const,
-          attrs: {
-            type: 'module',
-            src: `${config.base || '/'}@id/${vueClickToComponentClientId}`,
-          },
-        })
+    //   // 如果启用了点击跳转组件功能，添加客户端脚本
+    //   if (enableClickToComponent) {
+    //     // 添加客户端 JS
+    //     tags.push({
+    //       tag: 'script',
+    //       injectTo: 'head-prepend' as const,
+    //       attrs: {
+    //         type: 'module',
+    //         src: `${config.base || '/'}@id/${vueClickToComponentClientId}`,
+    //       },
+    //     })
 
-        // 添加客户端 CSS
-        tags.push({
-          tag: 'link',
-          injectTo: 'head-prepend' as const,
-          attrs: {
-            rel: 'stylesheet',
-            href: `${config.base || '/'}@id/${vueClickToComponentClientId}.css`,
-          } as any,
-        })
+    //     // 添加客户端 CSS
+    //     tags.push({
+    //       tag: 'link',
+    //       injectTo: 'head-prepend' as const,
+    //       attrs: {
+    //         rel: 'stylesheet',
+    //         href: `${config.base || '/'}@id/${vueClickToComponentClientId}.css`,
+    //       } as any,
+    //     })
 
-        // 添加编辑器配置脚本
-        tags.push({
-          tag: 'script',
-          injectTo: 'head-prepend' as const,
-          attrs: {
-            type: 'text/javascript',
-            src: `data:text/javascript;charset=utf-8,${encodeURIComponent(`window.__EDITOR__ = "${editor}";`)}`,
-          },
-        })
-      }
+    //     // 添加编辑器配置脚本
+    //     tags.push({
+    //       tag: 'script',
+    //       injectTo: 'head-prepend' as const,
+    //       attrs: {
+    //         type: 'text/javascript',
+    //         src: `data:text/javascript;charset=utf-8,${encodeURIComponent(`window.__EDITOR__ = "${editor}";`)}`,
+    //       },
+    //     })
+    //   }
 
-      return {
-        html,
-        tags,
-      }
-    },
+    //   return {
+    //     html,
+    //     tags,
+    //   }
+    // },
   }
 }
