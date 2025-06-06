@@ -5,6 +5,7 @@
 ## 迁移步骤
 
 1. 创建 `packages/vite-plugin` 目录结构
+
    - 添加 `package.json`
    - 添加 `tsconfig.json`
    - 添加 `build.config.ts`
@@ -13,14 +14,17 @@
 2. 将源代码从根目录的 `src` 复制到 `packages/vite-plugin/src`
 
 3. 更新根目录的 `package.json`
+
    - 添加对 `@aireview/vite-plugin` 子包的依赖
    - 更新构建脚本，添加 `build:vite-plugin` 命令
    - 更新 `exports` 字段，添加对子包的导出
 
 4. 更新根目录的入口文件 `src/index.ts`
+
    - 重定向到子包的入口文件
 
 5. 更新根目录的 `build.config.ts`
+
    - 添加对子包的外部依赖
 
 6. 更新 `README.md`，添加子包信息和项目结构说明

@@ -35,6 +35,7 @@ GET /ping
 ```
 
 响应：
+
 ```
 pong
 ```
@@ -52,6 +53,7 @@ Content-Type: application/json
 ```
 
 响应：
+
 ```json
 {
   "success": true,
@@ -75,6 +77,7 @@ Content-Type: application/json
 ```
 
 响应：
+
 ```json
 {
   "type": "ai-edit-response",

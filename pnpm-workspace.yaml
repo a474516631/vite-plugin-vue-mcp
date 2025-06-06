@@ -11,7 +11,6 @@ catalog:
   '@types/debug': ^4.1.12
   '@types/express': ^5.0.1
   '@types/node': latest
-  '@types/node-fetch': ^3.0.3
   '@types/vscode': ^1.85.0
   '@types/ws': ^8.18.1
   '@vitejs/plugin-vue': ^5.1.2
@@ -24,6 +23,7 @@ catalog:
   debug: ^4.4.0
   dom-to-image-more: ^3.6.0
   eslint: ^9.22.0
+  eslint-plugin-format: ^1.0.1
   express: ^5.1.0
   hookable: ^5.5.3
   html-tags: ^5.0.0

@@ -83,6 +83,7 @@
     "@types/node": "catalog:",
     "bumpp": "catalog:",
     "eslint": "catalog:",
+    "eslint-plugin-format": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",
     "unbuild": "catalog:",

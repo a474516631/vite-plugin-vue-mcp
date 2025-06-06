@@ -1,5 +1,5 @@
 import { defineExtension, useCommand, useIsDarkTheme, watchEffect } from 'reactive-vscode'
-import { commands, window, workspace } from 'vscode'
+import { window } from 'vscode'
 import { message, port } from './configs'
 import { handleAIEditRequest, startServer, stopServer } from './server'
 import { logger } from './utils/log'

@@ -1,5 +1,6 @@
 import type { ViteDevServer } from 'vite'
 import type { UIReviewElement, VueMcpContext, VueMcpOptions } from './types'
+import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
@@ -7,7 +8,6 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { nanoid } from 'nanoid'
 import { z } from 'zod'
 import { version } from '../package.json'
-import { createHash } from 'node:crypto'
 
 export function createMcpServerDefault(
   options: VueMcpOptions,
@@ -60,7 +60,6 @@ export function createMcpServerDefault(
     try {
       ensureSaveDir()
       const fullPath = path.resolve(vite.config.root, saveDir)
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
 
       // 保存元素数据的深拷贝，避免修改原始数据
       const elementsToSave = JSON.parse(JSON.stringify(uiReviewElements))
@@ -74,25 +73,25 @@ export function createMcpServerDefault(
         if (element.screenshot) {
           // 从base64提取图片数据
           const base64Data = element.screenshot.replace(/^data:image\/png;base64,/, '')
-          
+
           // 计算图片数据的哈希值作为唯一标识
           const imageHash = createHash('md5').update(base64Data).digest('hex')
-          
+
           // 检查是否已经保存过相同的图片
           let imagePath = imageHashMap.get(imageHash)
-          
+
           if (!imagePath) {
             // 生成文件名（使用哈希值）
             const filename = `screenshot-${imageHash}.png`
             const filePath = path.join(fullPath, 'screenshots', filename)
-            
+
             // 检查文件是否已存在
             if (!existsSync(filePath)) {
               // 保存图片文件
               await fs.writeFile(filePath, base64Data, 'base64')
               console.log(`保存新截图: ${filename}`)
             }
-            
+
             // 记录哈希值对应的路径
             imagePath = `screenshots/${filename}`
             imageHashMap.set(imageHash, imagePath)

@@ -18,6 +18,6 @@ export default defineConfig({
         autoSaveInterval: 0, // 收到数据时立即保存
       },
     }),
-    // DevTools(),
+    DevTools(),
   ],
 })

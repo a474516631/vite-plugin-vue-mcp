@@ -1,13 +1,7 @@
 import { createApp } from 'vue'
+import BoxModelInspector from './components/BoxModelInspector.vue'
 import FloatingPanel from './components/FloatingPanel.vue'
-import { initClickToComponent } from './utils/clickToComponent'
 import { setupRpcClient } from './utils/rpcClient'
-
-// 初始化点击跳转组件功能
-initClickToComponent()
-
-// 初始化RPC客户端
-setupRpcClient()
 
 // 创建并挂载悬浮窗组件
 function createFloatingPanel() {
@@ -24,13 +18,18 @@ function createFloatingPanel() {
   return app
 }
 
-// 在页面加载完成后初始化悬浮窗
+// 初始化RPC客户端
+setupRpcClient()
+
+// 在页面加载完成后初始化组件
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', createFloatingPanel)
+  document.addEventListener('DOMContentLoaded', () => {
+    createFloatingPanel()
+  })
 }
 else {
   createFloatingPanel()
 }
 
 // 导出公共 API
-export { initClickToComponent }
+export { BoxModelInspector }
