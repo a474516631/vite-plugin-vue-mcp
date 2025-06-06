@@ -623,6 +623,7 @@ defineExpose({
   box-sizing: border-box;
   user-select: none;
   pointer-events: none;
+  transition: all 0.1s ease-in-out;
 }
 
 .vue-mcp-box-model-label {
@@ -642,6 +643,7 @@ defineExpose({
 .vue-mcp-element {
   background-color: rgba(111, 168, 220, 0.25);
   border: 1px dashed rgba(111, 168, 220, 0.8);
+  transition: all 0.1s ease-in-out;
 }
 
 .vue-mcp-element-info-panel {
@@ -659,5 +661,7 @@ defineExpose({
   z-index: 100000;
   user-select: none;
   pointer-events: none;
+  transition: all 0.1s ease-in-out;
+
 }
 </style>
