@@ -6,7 +6,6 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import c from 'ansis'
-import htmlTags from 'html-tags'
 // 导入fetch API，确保在Node.js环境中可用
 import nodeFetch from 'node-fetch'
 import { join } from 'pathe'
@@ -15,6 +14,7 @@ import { createRPCServer } from 'vite-dev-rpc'
 import { setupRoutes } from './connect'
 import { createVueMcpContext } from './context'
 import { getSourceWithSourceCodeLocation } from './getSourceWithSourceCodeLocation'
+import htmlTags from './html-tags.json'
 
 import { createServerRpc } from './rpc'
 
@@ -344,58 +344,58 @@ export default function AiReiewVitePlugin(options: VueMcpOptions = {}): Plugin {
 
       return code
     },
-    // transformIndexHtml(html) {
-    //   if (options.appendTo)
-    //     return
+    transformIndexHtml(html) {
+      if (options.appendTo)
+        return
 
-    //   const tags = [
-    //     {
-    //       tag: 'script',
-    //       injectTo: 'head-prepend' as const,
-    //       attrs: {
-    //         type: 'module',
-    //         src: `${config.base || '/'}@id/virtual:vue-mcp-path:overlay.js`,
-    //       },
-    //     },
-    //   ]
+      const tags = [
+        {
+          tag: 'script',
+          injectTo: 'head-prepend' as const,
+          attrs: {
+            type: 'module',
+            src: `${config.base || '/'}@id/virtual:vue-mcp-path:overlay.js`,
+          },
+        },
+      ]
 
-    //   // 如果启用了点击跳转组件功能，添加客户端脚本
-    //   if (enableClickToComponent) {
-    //     // 添加客户端 JS
-    //     tags.push({
-    //       tag: 'script',
-    //       injectTo: 'head-prepend' as const,
-    //       attrs: {
-    //         type: 'module',
-    //         src: `${config.base || '/'}@id/${vueClickToComponentClientId}`,
-    //       },
-    //     })
+      // 如果启用了点击跳转组件功能，添加客户端脚本
+      if (enableClickToComponent) {
+        // 添加客户端 JS
+        tags.push({
+          tag: 'script',
+          injectTo: 'head-prepend' as const,
+          attrs: {
+            type: 'module',
+            src: `${config.base || '/'}@id/${vueClickToComponentClientId}`,
+          },
+        })
 
-    //     // 添加客户端 CSS
-    //     tags.push({
-    //       tag: 'link',
-    //       injectTo: 'head-prepend' as const,
-    //       attrs: {
-    //         rel: 'stylesheet',
-    //         href: `${config.base || '/'}@id/${vueClickToComponentClientId}.css`,
-    //       } as any,
-    //     })
+        // 添加客户端 CSS
+        tags.push({
+          tag: 'link',
+          injectTo: 'head-prepend' as const,
+          attrs: {
+            rel: 'stylesheet',
+            href: `${config.base || '/'}@id/${vueClickToComponentClientId}.css`,
+          } as any,
+        })
 
-    //     // 添加编辑器配置脚本
-    //     tags.push({
-    //       tag: 'script',
-    //       injectTo: 'head-prepend' as const,
-    //       attrs: {
-    //         type: 'text/javascript',
-    //         src: `data:text/javascript;charset=utf-8,${encodeURIComponent(`window.__EDITOR__ = "${editor}";`)}`,
-    //       },
-    //     })
-    //   }
+        // 添加编辑器配置脚本
+        tags.push({
+          tag: 'script',
+          injectTo: 'head-prepend' as const,
+          attrs: {
+            type: 'text/javascript',
+            src: `data:text/javascript;charset=utf-8,${encodeURIComponent(`window.__EDITOR__ = "${editor}";`)}`,
+          },
+        })
+      }
 
-    //   return {
-    //     html,
-    //     tags,
-    //   }
-    // },
+      return {
+        html,
+        tags,
+      }
+    },
   }
 }
