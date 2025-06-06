@@ -1,167 +1,5 @@
-<template>
-  <div>
-    <!-- 盒模型浮层容器 -->
-    <div 
-      v-show="targetElement"
-      id="vue-mcp-box-model-container"
-      class="vue-mcp-container"
-      :ai-review-inspect-element-ignore="true"
-    >
-      <!-- 元素本身高亮 -->
-      <div
-        class="vue-mcp-box-model-highlight vue-mcp-element"
-        :style="elementHighlightStyle"
-        :ai-review-inspect-element-ignore="true"
-      >
-        <!-- 元素信息面板 -->
-        <div class="vue-mcp-element-info-panel">
-          {{ elementComputedStyle }}
-          <div><strong>{{ elementTagName }}</strong></div>
-          <div>尺寸: {{ elementRect.width }}px × {{ elementRect.height }}px</div>
-          <div>字体: {{ elementComputedStyle?.fontSize }}/{{ elementComputedStyle?.color }}</div>
-          <div>背景: {{ elementComputedStyle?.backgroundColor }}</div>
-        </div>
-      </div>
-
-      <!-- Padding 高亮区域 -->
-      <template v-show="hasPadding">
-        <!-- 顶部 padding -->
-        <div
-          v-show="paddingValues.top > 0"
-          class="vue-mcp-box-model-highlight vue-mcp-padding-top"
-          :style="paddingTopStyle"
-          :ai-review-inspect-element-ignore="true"
-        >
-          <div
-            class="vue-mcp-box-model-label"
-            :style="{ color: paddingTextColor }"
-            :ai-review-inspect-element-ignore="true"
-          >
-            {{ paddingValues.top }}px
-          </div>
-        </div>
-
-        <!-- 右侧 padding -->
-        <div
-          v-show="paddingValues.right > 0"
-          class="vue-mcp-box-model-highlight vue-mcp-padding-right"
-          :style="paddingRightStyle"
-          :ai-review-inspect-element-ignore="true"
-        >
-          <div
-            class="vue-mcp-box-model-label"
-            :style="{ color: paddingTextColor }"
-            :ai-review-inspect-element-ignore="true"
-          >
-            {{ paddingValues.right }}px
-          </div>
-        </div>
-
-        <!-- 底部 padding -->
-        <div
-          v-show="paddingValues.bottom > 0"
-          class="vue-mcp-box-model-highlight vue-mcp-padding-bottom"
-          :style="paddingBottomStyle"
-          :ai-review-inspect-element-ignore="true"
-        >
-          <div
-            class="vue-mcp-box-model-label"
-            :style="{ color: paddingTextColor }"
-            :ai-review-inspect-element-ignore="true"
-          >
-            {{ paddingValues.bottom }}px
-          </div>
-        </div>
-
-        <!-- 左侧 padding -->
-        <div
-          v-show="paddingValues.left > 0"
-          class="vue-mcp-box-model-highlight vue-mcp-padding-left"
-          :style="paddingLeftStyle"
-          :ai-review-inspect-element-ignore="true"
-        >
-          <div
-            class="vue-mcp-box-model-label"
-            :style="{ color: paddingTextColor }"
-            :ai-review-inspect-element-ignore="true"
-          >
-            {{ paddingValues.left }}px
-          </div>
-        </div>
-      </template>
-
-      <!-- Margin 高亮区域 -->
-      <template v-show="hasMargin">
-        <!-- 顶部 margin -->
-        <div
-          v-show="marginValues.top > 0"
-          class="vue-mcp-box-model-highlight vue-mcp-margin-top"
-          :style="marginTopStyle"
-          :ai-review-inspect-element-ignore="true"
-        >
-          <div
-            class="vue-mcp-box-model-label"
-            :style="{ color: marginTextColor }"
-            :ai-review-inspect-element-ignore="true"
-          >
-            {{ marginValues.top }}px
-          </div>
-        </div>
-
-        <!-- 右侧 margin -->
-        <div
-          v-show="marginValues.right > 0"
-          class="vue-mcp-box-model-highlight vue-mcp-margin-right"
-          :style="marginRightStyle"
-          :ai-review-inspect-element-ignore="true"
-        >
-          <div
-            class="vue-mcp-box-model-label"
-            :style="{ color: marginTextColor }"
-            :ai-review-inspect-element-ignore="true"
-          >
-            {{ marginValues.right }}px
-          </div>
-        </div>
-
-        <!-- 底部 margin -->
-        <div
-          v-show="marginValues.bottom > 0"
-          class="vue-mcp-box-model-highlight vue-mcp-margin-bottom"
-          :style="marginBottomStyle"
-          :ai-review-inspect-element-ignore="true"
-        >
-          <div
-            class="vue-mcp-box-model-label"
-            :style="{ color: marginTextColor }"
-            :ai-review-inspect-element-ignore="true"
-          >
-            {{ marginValues.bottom }}px
-          </div>
-        </div>
-
-        <!-- 左侧 margin -->
-        <div
-          v-show="marginValues.left > 0"
-          class="vue-mcp-box-model-highlight vue-mcp-margin-left"
-          :style="marginLeftStyle"
-          :ai-review-inspect-element-ignore="true"
-        >
-          <div
-            class="vue-mcp-box-model-label"
-            :style="{ color: marginTextColor }"
-            :ai-review-inspect-element-ignore="true"
-          >
-            {{ marginValues.left }}px
-          </div>
-        </div>
-      </template>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 // 常量
 const ignoreKey = 'ai-review-inspect-element-ignore'
@@ -169,17 +7,20 @@ const targetElement = ref<HTMLElement | null>(null)
 
 // 计算属性
 const elementRect = computed(() => {
-  if (!targetElement.value) return { top: 0, left: 0, right: 0, bottom: 0, width: 0, height: 0 }
+  if (!targetElement.value)
+    return { top: 0, left: 0, right: 0, bottom: 0, width: 0, height: 0 }
   return targetElement.value.getBoundingClientRect()
 })
 
 const elementComputedStyle = computed(() => {
-  if (!targetElement.value) return null
+  if (!targetElement.value)
+    return null
   return window.getComputedStyle(targetElement.value)
 })
 
 const elementTagName = computed(() => {
-  if (!targetElement.value) return ''
+  if (!targetElement.value)
+    return ''
   const tagName = targetElement.value.tagName.toLowerCase()
   const className = targetElement.value.className ? `.${targetElement.value.className.split(' ').join('.')}` : ''
   return `${tagName}${className}`
@@ -187,12 +28,13 @@ const elementTagName = computed(() => {
 
 // Padding 相关计算属性
 const paddingValues = computed(() => {
-  if (!elementComputedStyle.value) return { top: 0, right: 0, bottom: 0, left: 0 }
+  if (!elementComputedStyle.value)
+    return { top: 0, right: 0, bottom: 0, left: 0 }
   return {
     top: Number.parseInt(elementComputedStyle.value.paddingTop, 10) || 0,
     right: Number.parseInt(elementComputedStyle.value.paddingRight, 10) || 0,
     bottom: Number.parseInt(elementComputedStyle.value.paddingBottom, 10) || 0,
-    left: Number.parseInt(elementComputedStyle.value.paddingLeft, 10) || 0
+    left: Number.parseInt(elementComputedStyle.value.paddingLeft, 10) || 0,
   }
 })
 
@@ -207,12 +49,13 @@ const paddingBorderStyle = computed(() => '1px dashed rgba(28, 171, 226, 0.8)')
 
 // Margin 相关计算属性
 const marginValues = computed(() => {
-  if (!elementComputedStyle.value) return { top: 0, right: 0, bottom: 0, left: 0 }
+  if (!elementComputedStyle.value)
+    return { top: 0, right: 0, bottom: 0, left: 0 }
   return {
     top: Number.parseInt(elementComputedStyle.value.marginTop, 10) || 0,
     right: Number.parseInt(elementComputedStyle.value.marginRight, 10) || 0,
     bottom: Number.parseInt(elementComputedStyle.value.marginBottom, 10) || 0,
-    left: Number.parseInt(elementComputedStyle.value.marginLeft, 10) || 0
+    left: Number.parseInt(elementComputedStyle.value.marginLeft, 10) || 0,
   }
 })
 
@@ -227,7 +70,8 @@ const marginBorderStyle = computed(() => '1px dashed rgba(229, 153, 57, 0.8)')
 
 // 元素高亮样式
 const elementHighlightStyle = computed<any>(() => {
-  if (!elementRect.value) return {}
+  if (!elementRect.value)
+    return {}
   return {
     position: 'fixed',
     top: `${elementRect.value.top}px`,
@@ -238,19 +82,20 @@ const elementHighlightStyle = computed<any>(() => {
     border: '1px dashed rgba(111, 168, 220, 0.8)',
     boxSizing: 'border-box',
     userSelect: 'none',
-    pointerEvents: 'none'
+    pointerEvents: 'none',
   }
 })
 
 // 封装创建盒模型样式的函数
 function createBoxModelStyleComputed(type: 'padding' | 'margin', position: 'top' | 'right' | 'bottom' | 'left') {
   return computed<any>(() => {
-    if (!elementRect.value) return {}
-    
+    if (!elementRect.value)
+      return {}
+
     const values = type === 'padding' ? paddingValues.value : marginValues.value
     const color = type === 'padding' ? paddingColor.value : marginColor.value
     const borderStyle = type === 'padding' ? paddingBorderStyle.value : marginBorderStyle.value
-    
+
     // 基础样式
     const baseStyle = {
       position: 'fixed',
@@ -258,9 +103,9 @@ function createBoxModelStyleComputed(type: 'padding' | 'margin', position: 'top'
       border: borderStyle,
       boxSizing: 'border-box',
       userSelect: 'none',
-      pointerEvents: 'none'
+      pointerEvents: 'none',
     } as any
-    
+
     // 根据位置计算特定样式
     switch (position) {
       case 'top':
@@ -269,7 +114,7 @@ function createBoxModelStyleComputed(type: 'padding' | 'margin', position: 'top'
           top: type === 'padding' ? `${elementRect.value.top}px` : `${elementRect.value.top - values.top}px`,
           left: type === 'padding' ? `${elementRect.value.left}px` : `${elementRect.value.left - values.left}px`,
           width: type === 'padding' ? `${elementRect.value.width}px` : `${elementRect.value.width + values.left + values.right}px`,
-          height: `${values.top}px`
+          height: `${values.top}px`,
         }
       case 'right':
         return {
@@ -277,7 +122,7 @@ function createBoxModelStyleComputed(type: 'padding' | 'margin', position: 'top'
           top: type === 'padding' ? `${elementRect.value.top}px` : `${elementRect.value.top - values.top}px`,
           left: type === 'padding' ? `${elementRect.value.right - values.right}px` : `${elementRect.value.right}px`,
           width: `${values.right}px`,
-          height: type === 'padding' ? `${elementRect.value.height}px` : `${elementRect.value.height + values.top + values.bottom}px`
+          height: type === 'padding' ? `${elementRect.value.height}px` : `${elementRect.value.height + values.top + values.bottom}px`,
         }
       case 'bottom':
         return {
@@ -285,7 +130,7 @@ function createBoxModelStyleComputed(type: 'padding' | 'margin', position: 'top'
           top: type === 'padding' ? `${elementRect.value.bottom - values.bottom}px` : `${elementRect.value.bottom}px`,
           left: type === 'padding' ? `${elementRect.value.left}px` : `${elementRect.value.left - values.left}px`,
           width: type === 'padding' ? `${elementRect.value.width}px` : `${elementRect.value.width + values.left + values.right}px`,
-          height: `${values.bottom}px`
+          height: `${values.bottom}px`,
         }
       case 'left':
         return {
@@ -293,7 +138,7 @@ function createBoxModelStyleComputed(type: 'padding' | 'margin', position: 'top'
           top: type === 'padding' ? `${elementRect.value.top}px` : `${elementRect.value.top - values.top}px`,
           left: type === 'padding' ? `${elementRect.value.left}px` : `${elementRect.value.left - values.left}px`,
           width: `${values.left}px`,
-          height: type === 'padding' ? `${elementRect.value.height}px` : `${elementRect.value.height + values.top + values.bottom}px`
+          height: type === 'padding' ? `${elementRect.value.height}px` : `${elementRect.value.height + values.top + values.bottom}px`,
         }
       default:
         return baseStyle
@@ -343,7 +188,7 @@ function cleanTarget(type?: string): void {
   targetElList.forEach((el) => {
     el.removeAttribute('vue-click-to-component-target')
   })
-  
+
   // 清除目标元素
   targetElement.value = null
 }
@@ -480,8 +325,9 @@ function getComponentInfoList(elList: (HTMLElement | Element)[]): ComponentInfo[
 
 // 显示元素的盒模型（padding/margin）- 更新为使用响应式数据
 function showBoxModel(element: HTMLElement): void {
-  if (!element) return
-  
+  if (!element)
+    return
+
   // 设置目标元素，触发所有计算属性更新
   targetElement.value = element
 }
@@ -596,9 +442,171 @@ defineExpose({
   getElWithSourceCodeLocation,
   getElListWithSourceCodeLocation,
   getComponentInfoList,
-  checkHandleAltClick
+  checkHandleAltClick,
 })
 </script>
+
+<template>
+  <div>
+    <!-- 盒模型浮层容器 -->
+    <div
+      v-show="targetElement"
+      id="vue-mcp-box-model-container"
+      class="vue-mcp-container"
+      :ai-review-inspect-element-ignore="true"
+    >
+      <!-- 元素本身高亮 -->
+      <div
+        class="vue-mcp-box-model-highlight vue-mcp-element"
+        :style="elementHighlightStyle"
+        :ai-review-inspect-element-ignore="true"
+      >
+        <!-- 元素信息面板 -->
+        <div class="vue-mcp-element-info-panel">
+          {{ elementComputedStyle }}
+          <div><strong>{{ elementTagName }}</strong></div>
+          <div>尺寸: {{ elementRect.width }}px × {{ elementRect.height }}px</div>
+          <div>字体: {{ elementComputedStyle?.fontSize }}/{{ elementComputedStyle?.color }}</div>
+          <div>背景: {{ elementComputedStyle?.backgroundColor }}</div>
+        </div>
+      </div>
+
+      <!-- Padding 高亮区域 -->
+      <div v-show="hasPadding">
+        <!-- 顶部 padding -->
+        <div
+          v-show="paddingValues.top > 0"
+          class="vue-mcp-box-model-highlight vue-mcp-padding-top"
+          :style="paddingTopStyle"
+          :ai-review-inspect-element-ignore="true"
+        >
+          <div
+            class="vue-mcp-box-model-label"
+            :style="{ color: paddingTextColor }"
+            :ai-review-inspect-element-ignore="true"
+          >
+            {{ paddingValues.top }}px
+          </div>
+        </div>
+
+        <!-- 右侧 padding -->
+        <div
+          v-show="paddingValues.right > 0"
+          class="vue-mcp-box-model-highlight vue-mcp-padding-right"
+          :style="paddingRightStyle"
+          :ai-review-inspect-element-ignore="true"
+        >
+          <div
+            class="vue-mcp-box-model-label"
+            :style="{ color: paddingTextColor }"
+            :ai-review-inspect-element-ignore="true"
+          >
+            {{ paddingValues.right }}px
+          </div>
+        </div>
+
+        <!-- 底部 padding -->
+        <div
+          v-show="paddingValues.bottom > 0"
+          class="vue-mcp-box-model-highlight vue-mcp-padding-bottom"
+          :style="paddingBottomStyle"
+          :ai-review-inspect-element-ignore="true"
+        >
+          <div
+            class="vue-mcp-box-model-label"
+            :style="{ color: paddingTextColor }"
+            :ai-review-inspect-element-ignore="true"
+          >
+            {{ paddingValues.bottom }}px
+          </div>
+        </div>
+
+        <!-- 左侧 padding -->
+        <div
+          v-show="paddingValues.left > 0"
+          class="vue-mcp-box-model-highlight vue-mcp-padding-left"
+          :style="paddingLeftStyle"
+          :ai-review-inspect-element-ignore="true"
+        >
+          <div
+            class="vue-mcp-box-model-label"
+            :style="{ color: paddingTextColor }"
+            :ai-review-inspect-element-ignore="true"
+          >
+            {{ paddingValues.left }}px
+          </div>
+        </div>
+      </div>
+
+      <!-- Margin 高亮区域 -->
+      <div v-show="hasMargin">
+        <!-- 顶部 margin -->
+        <div
+          v-show="marginValues.top > 0"
+          class="vue-mcp-box-model-highlight vue-mcp-margin-top"
+          :style="marginTopStyle"
+          :ai-review-inspect-element-ignore="true"
+        >
+          <div
+            class="vue-mcp-box-model-label"
+            :style="{ color: marginTextColor }"
+            :ai-review-inspect-element-ignore="true"
+          >
+            {{ marginValues.top }}px
+          </div>
+        </div>
+
+        <!-- 右侧 margin -->
+        <div
+          v-show="marginValues.right > 0"
+          class="vue-mcp-box-model-highlight vue-mcp-margin-right"
+          :style="marginRightStyle"
+          :ai-review-inspect-element-ignore="true"
+        >
+          <div
+            class="vue-mcp-box-model-label"
+            :style="{ color: marginTextColor }"
+            :ai-review-inspect-element-ignore="true"
+          >
+            {{ marginValues.right }}px
+          </div>
+        </div>
+
+        <!-- 底部 margin -->
+        <div
+          v-show="marginValues.bottom > 0"
+          class="vue-mcp-box-model-highlight vue-mcp-margin-bottom"
+          :style="marginBottomStyle"
+          :ai-review-inspect-element-ignore="true"
+        >
+          <div
+            class="vue-mcp-box-model-label"
+            :style="{ color: marginTextColor }"
+            :ai-review-inspect-element-ignore="true"
+          >
+            {{ marginValues.bottom }}px
+          </div>
+        </div>
+
+        <!-- 左侧 margin -->
+        <div
+          v-show="marginValues.left > 0"
+          class="vue-mcp-box-model-highlight vue-mcp-margin-left"
+          :style="marginLeftStyle"
+          :ai-review-inspect-element-ignore="true"
+        >
+          <div
+            class="vue-mcp-box-model-label"
+            :style="{ color: marginTextColor }"
+            :ai-review-inspect-element-ignore="true"
+          >
+            {{ marginValues.left }}px
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 /* 盒模型高亮样式 */

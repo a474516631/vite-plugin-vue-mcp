@@ -1,79 +1,21 @@
-<template>
-  <div class="vue-mcp-floating-panel" :class="{ 'minimized': isMinimized }" ref="panelRef">
-    <!-- 悬浮窗头部 -->
-    <div class="vue-mcp-floating-panel-header" @mousedown="startDrag">
-      <div class="vue-mcp-floating-panel-title"> UI 走查工具</div>
-      <button class="vue-mcp-floating-panel-toggle" :aria-label="isMinimized ? '展开' : '最小化'" @click="toggleMinimize">
-        {{ isMinimized ? '' : '−' }}
-      </button>
-    </div>
-
-    <!-- 悬浮窗内容 -->
-    <div class="vue-mcp-floating-panel-content">
-      <form id="vue-mcp-element-form">
-        <!-- 高亮说明 -->
-        <HelpTip />
-
-        <!-- 已选择的元素列表 -->
-        <ElementList :elements="selectedElements" @remove="removeElement" @view="showElementBoxModel"
-          @comment="commentElement" @screenshot="screenshotElement" @toggle-submit="toggleElementSubmitted"
-          @toggle-fixed="toggleElementFixed" />
-
-        <!-- 保存状态提示 -->
-        <div v-if="saveStatus" class="vue-mcp-save-status" :class="saveStatus.type">
-          <span class="vue-mcp-save-status-icon">
-            {{ saveStatus.type === 'success' ? '✓' : saveStatus.type === 'info' ? 'ℹ' : '⚠' }}
-          </span>
-          <span class="vue-mcp-save-status-text">{{ saveStatus.message }}</span>
-        </div>
-
-        <!-- 操作按钮 -->
-        <ActionButtons @submit="submitCurrentElement" @refresh="refreshUIReviewElements" @clear="clearElements"
-          :disabled-submit="allElementsSubmitted" />
-      </form>
-    </div>
-  </div>
-  <!-- 通知提示 -->
-  <NotificationTip :visible="showKeyboardShortcutTip" message="已添加元素" type="success"
-    @close="dismissKeyboardShortcutTip" />
-  <!-- 元素 Popover -->
-  <ElementPopover :element="lastHighlightedElement" :comment-text="popoverCommentText"
-    :screenshot-preview="screenshotPreviewPopover" :position="popoverPosition"
-    v-if="lastHighlightedElement && showElementPopover" @update:comment-text="popoverCommentText = $event"
-    @remove-screenshot="removePopoverScreenshot" @capture-screenshot="capturePopoverScreenshot"
-    @jump-to-code="jumpToCode" @add-element="addElementFromPopover" @close="hideElementPopover" />
-  <!-- 引用 BoxModelInspector 组件 -->
-  <BoxModelInspector ref="boxModelInspector" />
-  <!-- 评论对话框 -->
-  <CommentDialog :visible="commentDialogVisible" :comment-text="commentText" :screenshot-preview="screenshotPreview"
-    @update:comment-text="commentText = $event" @remove-screenshot="removeScreenshot"
-    @capture-screenshot="captureScreenshot" @cancel="cancelComment" @save="saveComment" />
-  <!-- 悬浮球 -->
-  <div v-if="isMinimized" class="vue-mcp-floating-ball" @click="toggleMinimize">
-    UI
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
+import type { ElementInfo, Position, SaveStatus } from '../types'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 // 导入旧的截图函数
 import { captureElementScreenshot } from '../utils/screenshot'
 // 导入新的稳定标识符相关函数
 import { findElementByPath, findElementByStableId, generateStableId, updateElementsWithStableId } from '../utils/stableElementId'
-import { ElementInfo, SaveStatus, Position } from '../types'
 
+import ActionButtons from './ActionButtons.vue'
+// 导入 BoxModelInspector 组件
+import BoxModelInspector from './BoxModelInspector.vue'
+import CommentDialog from './CommentDialog.vue'
 // 组件导入
 // import ElementItem from './ElementItem.vue'
 import ElementList from './ElementList.vue'
 import ElementPopover from './ElementPopover.vue'
-import CommentDialog from './CommentDialog.vue'
-import NotificationTip from './NotificationTip.vue'
 import HelpTip from './HelpTip.vue'
-import ActionButtons from './ActionButtons.vue'
-// @ts-ignore
-import domToImage from 'dom-to-image-more'
-// 导入 BoxModelInspector 组件
-import BoxModelInspector from './BoxModelInspector.vue'
+import NotificationTip from './NotificationTip.vue'
 
 // 状态
 const isMinimized = ref(false)
@@ -118,26 +60,26 @@ const dragOffset = ref({ x: 0, y: 0 })
 const boxModelInspector = ref<InstanceType<typeof BoxModelInspector> | null>(null)
 
 // 获取 BoxModelInspector 组件中的方法
-const showBoxModel = (element: HTMLElement) => {
+function showBoxModel(element: HTMLElement) {
   boxModelInspector.value?.showBoxModel(element)
 }
 
-const openEditor = (sourceCodeLocation: string, editor = 'cursor') => {
+function openEditor(sourceCodeLocation: string, editor = 'cursor') {
   boxModelInspector.value?.openEditor(sourceCodeLocation, editor)
 }
 
 // 获取元素名称
-const getElementName = (el: HTMLElement): string => {
+function getElementName(el: HTMLElement): string {
   return el.localName || el.tagName.toLowerCase()
 }
 
 // 方法
-const toggleMinimize = () => {
+function toggleMinimize() {
   isMinimized.value = !isMinimized.value
 }
 
 // 显示快捷键提示
-const showKeyboardShortcutNotification = () => {
+function showKeyboardShortcutNotification() {
   showKeyboardShortcutTip.value = true
 
   // 清除之前的超时
@@ -152,7 +94,7 @@ const showKeyboardShortcutNotification = () => {
 }
 
 // 关闭快捷键提示
-const dismissKeyboardShortcutTip = () => {
+function dismissKeyboardShortcutTip() {
   showKeyboardShortcutTip.value = false
   if (keyboardShortcutTipTimeout.value) {
     clearTimeout(keyboardShortcutTipTimeout.value)
@@ -160,13 +102,14 @@ const dismissKeyboardShortcutTip = () => {
 }
 
 // 拖拽相关方法
-const startDrag = (e: MouseEvent) => {
-  if (!panelRef.value) return
+function startDrag(e: MouseEvent) {
+  if (!panelRef.value)
+    return
 
   isDragging.value = true
   dragOffset.value = {
     x: e.clientX - panelRef.value.getBoundingClientRect().left,
-    y: e.clientY - panelRef.value.getBoundingClientRect().top
+    y: e.clientY - panelRef.value.getBoundingClientRect().top,
   }
 
   if (panelRef.value) {
@@ -174,8 +117,9 @@ const startDrag = (e: MouseEvent) => {
   }
 }
 
-const onDrag = (e: MouseEvent) => {
-  if (!isDragging.value || !panelRef.value) return
+function onDrag(e: MouseEvent) {
+  if (!isDragging.value || !panelRef.value)
+    return
 
   panelRef.value.style.right = 'auto'
   panelRef.value.style.bottom = 'auto'
@@ -183,7 +127,7 @@ const onDrag = (e: MouseEvent) => {
   panelRef.value.style.top = `${e.clientY - dragOffset.value.y}px`
 }
 
-const stopDrag = () => {
+function stopDrag() {
   if (isDragging.value && panelRef.value) {
     isDragging.value = false
     panelRef.value.style.transition = 'transform 0.3s ease'
@@ -191,9 +135,9 @@ const stopDrag = () => {
 }
 
 // 元素操作方法
-const submitCurrentElement = () => {
+function submitCurrentElement() {
   // 将所有未提交的元素标记为已提交
-  unifiedElements.value.forEach(element => {
+  unifiedElements.value.forEach((element) => {
     if (!element.isSubmitted) {
       element.isSubmitted = true
     }
@@ -203,7 +147,7 @@ const submitCurrentElement = () => {
   saveStatus.value = {
     type: 'success',
     message: '所有元素已标记为已提交',
-    timestamp: Date.now()
+    timestamp: Date.now(),
   }
 
   // 保存更新后的元素
@@ -213,14 +157,14 @@ const submitCurrentElement = () => {
   fetchSubmit()
 }
 
-const addElement = (element: ElementInfo) => {
+function addElement(element: ElementInfo) {
   // 检查是否已存在
   if (!selectedElements.value.some(el => el.path === element.path)) {
     selectedElements.value.push(element)
   }
 }
 
-const removeElement = (path: string) => {
+function removeElement(path: string) {
   const index = selectedElements.value.findIndex(el => el.path === path)
   if (index !== -1) {
     selectedElements.value.splice(index, 1)
@@ -228,7 +172,7 @@ const removeElement = (path: string) => {
 }
 
 // 显示元素的盒模型
-const showElementBoxModel = (path: string) => {
+function showElementBoxModel(path: string) {
   // 先尝试通过源代码位置找
   let element = findElementByPath(path)
 
@@ -242,13 +186,14 @@ const showElementBoxModel = (path: string) => {
 
   if (element) {
     showBoxModel(element)
-  } else {
+  }
+  else {
     console.log('未找到对应元素，无法显示盒模型')
   }
 }
 
 // 添加评论
-const commentElement = (path: string) => {
+function commentElement(path: string) {
   const elementIndex = selectedElements.value.findIndex(el => el.path === path)
   if (elementIndex !== -1) {
     // 显示评论对话框
@@ -260,38 +205,40 @@ const commentElement = (path: string) => {
 }
 
 // 发送数据到MCP服务
-const sendDataToMcpService = () => {
+function sendDataToMcpService() {
   try {
     // 检查是否存在window.__VUE_MCP_RPC__对象
     // 显示保存中状态
     saveStatus.value = {
       type: 'success',
       message: '正在保存...',
-      timestamp: Date.now()
+      timestamp: Date.now(),
     }
     const mcpRpc = (window as any).__VUE_MCP_RPC__
     if (mcpRpc && typeof mcpRpc.sendUIReviewElements === 'function') {
       // 发送已选择的元素数据
       mcpRpc.sendUIReviewElements(selectedElements.value)
       saveStatus.value = null
-    } else {
+    }
+    else {
       console.warn('MCP RPC 服务不可用，无法发送数据')
 
       // 显示错误状态
       saveStatus.value = {
         type: 'error',
         message: 'MCP服务不可用，无法保存',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       }
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.error('发送数据到MCP服务失败:', error)
 
     // 显示错误状态
     saveStatus.value = {
       type: 'error',
       message: `保存失败: ${error instanceof Error ? error.message : String(error)}`,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     }
   }
 }
@@ -308,14 +255,14 @@ watch(() => {
 }, { deep: true })
 
 // 在保存评论时也发送数据
-const saveComment = () => {
+function saveComment() {
   const elementIndex = selectedElements.value.findIndex(el => el.path === currentCommentPath.value)
   if (elementIndex !== -1) {
     // 更新评论
     selectedElements.value[elementIndex] = {
       ...selectedElements.value[elementIndex],
       comment: commentText.value.trim(),
-      screenshot: screenshotPreview.value || undefined
+      screenshot: screenshotPreview.value || undefined,
     }
 
     // 发送更新后的数据
@@ -325,7 +272,7 @@ const saveComment = () => {
   cancelComment()
 }
 
-const cancelComment = () => {
+function cancelComment() {
   commentDialogVisible.value = false
   commentText.value = ''
   currentCommentPath.value = ''
@@ -333,12 +280,12 @@ const cancelComment = () => {
 }
 
 // 移除截图
-const removeScreenshot = () => {
+function removeScreenshot() {
   screenshotPreview.value = null
 }
 
 // 截图功能
-const captureScreenshot = () => {
+function captureScreenshot() {
   try {
     // 临时隐藏评论对话框和悬浮面板
     commentDialogVisible.value = false
@@ -388,10 +335,11 @@ const captureScreenshot = () => {
           if (panelRef.value) {
             panelRef.value.style.display = 'block'
           }
-        }
+        },
       )
     }, 100)
-  } catch (error) {
+  }
+  catch (error) {
     console.error('截图操作失败:', error)
     // 恢复评论对话框和悬浮面板
     commentDialogVisible.value = true
@@ -402,7 +350,7 @@ const captureScreenshot = () => {
 }
 
 // 截图元素（从列表中选择元素进行截图）
-const screenshotElement = (path: string) => {
+function screenshotElement(path: string) {
   // 找到元素
   const elementIndex = selectedElements.value.findIndex(el => el.path === path)
   if (elementIndex !== -1) {
@@ -418,8 +366,9 @@ const screenshotElement = (path: string) => {
 }
 
 // Popover相关方法
-const showPopoverForElement = (element: HTMLElement) => {
-  if (!element || !element.dataset.__sourceCodeLocation) return
+function showPopoverForElement(element: HTMLElement) {
+  if (!element || !element.dataset.__sourceCodeLocation)
+    return
 
   // 计算popover位置
   const rect = element.getBoundingClientRect()
@@ -439,15 +388,16 @@ const showPopoverForElement = (element: HTMLElement) => {
 }
 
 // 隐藏元素Popover
-const hideElementPopover = () => {
+function hideElementPopover() {
   showElementPopover.value = false
   popoverCommentText.value = ''
   screenshotPreviewPopover.value = null
 }
 
 // 跳转到代码
-const jumpToCode = () => {
-  if (!lastHighlightedElement.value) return
+function jumpToCode() {
+  if (!lastHighlightedElement.value)
+    return
 
   const sourceCodeLocation = lastHighlightedElement.value.dataset.__sourceCodeLocation
 
@@ -460,8 +410,9 @@ const jumpToCode = () => {
 }
 
 // 从Popover添加元素
-const addElementFromPopover = () => {
-  if (!lastHighlightedElement.value) return
+function addElementFromPopover() {
+  if (!lastHighlightedElement.value)
+    return
 
   const sourceCodeLocation = lastHighlightedElement.value.dataset.__sourceCodeLocation
 
@@ -475,7 +426,7 @@ const addElementFromPopover = () => {
       path: sourceCodeLocation,
       comment: popoverCommentText.value.trim() || undefined,
       screenshot: screenshotPreviewPopover.value || undefined,
-      stableId: stableId
+      stableId,
     })
 
     // 显示添加成功提示
@@ -487,12 +438,12 @@ const addElementFromPopover = () => {
 }
 
 // 移除Popover截图
-const removePopoverScreenshot = () => {
+function removePopoverScreenshot() {
   screenshotPreviewPopover.value = null
 }
 
 // 为Popover捕获截图
-const capturePopoverScreenshot = () => {
+function capturePopoverScreenshot() {
   try {
     // 临时隐藏popover
     showElementPopover.value = false
@@ -523,10 +474,11 @@ const capturePopoverScreenshot = () => {
           if (panelRef.value) {
             panelRef.value.style.display = 'block'
           }
-        }
+        },
       )
     }, 100)
-  } catch (error) {
+  }
+  catch (error) {
     console.error('截图操作失败:', error)
     // 恢复popover和悬浮面板
     showElementPopover.value = true
@@ -537,12 +489,12 @@ const capturePopoverScreenshot = () => {
 }
 
 // 清空所有元素
-const clearElements = () => {
+function clearElements() {
   selectedElements.value = []
 }
 
 // 主动获取UI走查数据
-const fetchUIReviewElements = async () => {
+async function fetchUIReviewElements() {
   const response = await fetch('/__mcp/api/ui-review-elements', {
     method: 'GET',
   })
@@ -550,7 +502,7 @@ const fetchUIReviewElements = async () => {
   return data
 }
 
-const fetchSubmit = async () => {
+async function fetchSubmit() {
   const response = await fetch('/__mcp/api/ai-edit', {
     method: 'POST',
     body: JSON.stringify({
@@ -563,13 +515,13 @@ const fetchSubmit = async () => {
 }
 
 // 添加按钮用于主动请求刷新UI走查数据
-const refreshUIReviewElements = async () => {
+async function refreshUIReviewElements() {
   try {
     // 显示加载状态
     saveStatus.value = {
       type: 'success',
       message: '正在获取UI走查数据...',
-      timestamp: Date.now()
+      timestamp: Date.now(),
     }
 
     // 调用API获取数据
@@ -580,20 +532,21 @@ const refreshUIReviewElements = async () => {
     if (saveStatus.value) {
       saveStatus.value = null
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.error('刷新UI走查数据失败:', error)
 
     // 显示错误状态
     saveStatus.value = {
       type: 'error',
       message: `刷新失败: ${error instanceof Error ? error.message : String(error)}`,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     }
   }
 }
 
 // 切换元素的提交状态
-const toggleElementSubmitted = (path: string) => {
+function toggleElementSubmitted(path: string) {
   const index = selectedElements.value.findIndex(el => el.path === path)
   if (index !== -1) {
     const element = selectedElements.value[index]
@@ -605,13 +558,14 @@ const toggleElementSubmitted = (path: string) => {
       saveStatus.value = {
         type: 'success',
         message: '已标记为已提交',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       }
-    } else {
+    }
+    else {
       saveStatus.value = {
         type: 'info',
         message: '已取消提交标记',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       }
     }
 
@@ -621,7 +575,7 @@ const toggleElementSubmitted = (path: string) => {
 }
 
 // 切换元素的修复状态
-const toggleElementFixed = (path: string) => {
+function toggleElementFixed(path: string) {
   const index = selectedElements.value.findIndex(el => el.path === path)
   if (index !== -1) {
     const element = selectedElements.value[index]
@@ -633,13 +587,14 @@ const toggleElementFixed = (path: string) => {
       saveStatus.value = {
         type: 'success',
         message: '已标记为已修复',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       }
-    } else {
+    }
+    else {
       saveStatus.value = {
         type: 'info',
         message: '已取消修复标记',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       }
     }
 
@@ -670,10 +625,10 @@ onMounted(() => {
   const clickHandler = (e: MouseEvent) => {
     // 如果点击的是popover内部或者激活区域内部，不处理
     if (e.target && (
-      (document.querySelector('.vue-mcp-element-popover') &&
-        (e.target as HTMLElement).closest('.vue-mcp-element-popover')) ||
-      (document.querySelector('.vue-mcp-floating-panel') &&
-        (e.target as HTMLElement).closest('.vue-mcp-floating-panel'))
+      (document.querySelector('.vue-mcp-element-popover')
+        && (e.target as HTMLElement).closest('.vue-mcp-element-popover'))
+      || (document.querySelector('.vue-mcp-floating-panel')
+        && (e.target as HTMLElement).closest('.vue-mcp-floating-panel'))
     )) {
       return
     }
@@ -689,11 +644,13 @@ onMounted(() => {
         e.stopPropagation()
         lastHighlightedElement.value = highlightedElement
         showPopoverForElement(highlightedElement)
-      } else {
+      }
+      else {
         // 隐藏popover
         hideElementPopover()
       }
-    } else {
+    }
+    else {
       // 点击其他区域时隐藏popover
       hideElementPopover()
     }
@@ -721,28 +678,31 @@ const mouseEventHandler = ref<((e: MouseEvent) => void) | null>(null)
 const clickEventHandler = ref<((e: MouseEvent) => void) | null>(null)
 
 // 查找可高亮的元素（带有源代码位置信息的元素）
-const findHighlightableElement = (el: HTMLElement | null): HTMLElement | null => {
-  if (!el) return null
+function findHighlightableElement(el: HTMLElement | null): HTMLElement | null {
+  if (!el)
+    return null
 
   try {
     let currentEl = el
     while (currentEl && !currentEl.dataset.__sourceCodeLocation) {
-      if (!currentEl.parentElement) break
+      if (!currentEl.parentElement)
+        break
       currentEl = currentEl.parentElement
     }
 
     return currentEl && currentEl.dataset.__sourceCodeLocation ? currentEl : null
-  } catch {
+  }
+  catch {
     return null
   }
 }
 
 // 监听高亮元素的变化
-const observeHighlightedElements = () => {
+function observeHighlightedElements() {
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
-      if (mutation.type === 'attributes' &&
-        mutation.attributeName === 'vue-click-to-component-target') {
+      if (mutation.type === 'attributes'
+        && mutation.attributeName === 'vue-click-to-component-target') {
         const element = mutation.target as HTMLElement
         if (element.hasAttribute('vue-click-to-component-target')) {
           // 当有新的高亮元素时，记录它
@@ -756,7 +716,7 @@ const observeHighlightedElements = () => {
   observer.observe(document.body, {
     attributes: true,
     attributeFilter: ['vue-click-to-component-target'],
-    subtree: true
+    subtree: true,
   })
 
   return observer
@@ -785,6 +745,112 @@ onUnmounted(() => {
 })
 </script>
 
+<template>
+  <div
+    ref="panelRef"
+    class="vue-mcp-floating-panel"
+    :class="{ minimized: isMinimized }"
+  >
+    <!-- 悬浮窗头部 -->
+    <div
+      class="vue-mcp-floating-panel-header"
+      @mousedown="startDrag"
+    >
+      <div class="vue-mcp-floating-panel-title">
+        UI 走查工具
+      </div>
+      <button
+        class="vue-mcp-floating-panel-toggle"
+        :aria-label="isMinimized ? '展开' : '最小化'"
+        @click="toggleMinimize"
+      >
+        {{ isMinimized ? '' : '−' }}
+      </button>
+    </div>
+
+    <!-- 悬浮窗内容 -->
+    <div class="vue-mcp-floating-panel-content">
+      <form id="vue-mcp-element-form">
+        <!-- 高亮说明 -->
+        <HelpTip />
+
+        <!-- 已选择的元素列表 -->
+        <ElementList
+          :elements="selectedElements"
+          @remove="removeElement"
+          @view="showElementBoxModel"
+          @comment="commentElement"
+          @screenshot="screenshotElement"
+          @toggle-submit="toggleElementSubmitted"
+          @toggle-fixed="toggleElementFixed"
+        />
+
+        <!-- 保存状态提示 -->
+        <div
+          v-if="saveStatus"
+          class="vue-mcp-save-status"
+          :class="saveStatus.type"
+        >
+          <span class="vue-mcp-save-status-icon">
+            {{ saveStatus.type === 'success' ? '✓' : saveStatus.type === 'info' ? 'ℹ' : '⚠' }}
+          </span>
+          <span class="vue-mcp-save-status-text">{{ saveStatus.message }}</span>
+        </div>
+
+        <!-- 操作按钮 -->
+        <ActionButtons
+          :disabled-submit="allElementsSubmitted"
+          @submit="submitCurrentElement"
+          @refresh="refreshUIReviewElements"
+          @clear="clearElements"
+        />
+      </form>
+    </div>
+  </div>
+  <!-- 通知提示 -->
+  <NotificationTip
+    :visible="showKeyboardShortcutTip"
+    message="已添加元素"
+    type="success"
+    @close="dismissKeyboardShortcutTip"
+  />
+  <!-- 元素 Popover -->
+  <ElementPopover
+    v-if="lastHighlightedElement && showElementPopover"
+    :element="lastHighlightedElement"
+    :comment-text="popoverCommentText"
+    :screenshot-preview="screenshotPreviewPopover"
+    :position="popoverPosition"
+    @update:comment-text="popoverCommentText = $event"
+    @remove-screenshot="removePopoverScreenshot"
+    @capture-screenshot="capturePopoverScreenshot"
+    @jump-to-code="jumpToCode"
+    @add-element="addElementFromPopover"
+    @close="hideElementPopover"
+  />
+  <!-- 引用 BoxModelInspector 组件 -->
+  <BoxModelInspector ref="boxModelInspector" />
+  <!-- 评论对话框 -->
+  <CommentDialog
+    :visible="commentDialogVisible"
+    :comment-text="commentText"
+    :screenshot-preview="screenshotPreview"
+    @update:comment-text="commentText = $event"
+    @remove-screenshot="removeScreenshot"
+    @capture-screenshot="captureScreenshot"
+    @cancel="cancelComment"
+    @save="saveComment"
+  />
+  <!-- 悬浮球 -->
+  <div
+    v-if="isMinimized"
+    class="vue-mcp-floating-ball"
+    @click="toggleMinimize"
+  >
+    UI
+  </div>
+</template>
+
 <style scoped>
 .vue-mcp-floating-panel {
   position: fixed;
@@ -796,7 +862,15 @@ onUnmounted(() => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 99999;
   overflow: hidden;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
   transition: all 0.3s ease;
 }
 
@@ -804,7 +878,6 @@ onUnmounted(() => {
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
-
 }
 
 .vue-mcp-floating-ball {

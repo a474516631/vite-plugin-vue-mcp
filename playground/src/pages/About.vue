@@ -65,7 +65,6 @@ function submitForm() {
   if (isFormValid.value) {
     console.log('Form submitted:', contactForm)
     // Add actual form submission logic here
-    alert('Thank you for your message! We will get back to you soon.')
     // Reset form
     contactForm.name = ''
     contactForm.email = ''
@@ -107,12 +106,22 @@ function submitForm() {
       </div>
     </div>
 
-    <div v-if="showTeam" class="team-section">
+    <div
+      v-if="showTeam"
+      class="team-section"
+    >
       <h2>Our Leadership Team</h2>
       <div class="team-grid">
-        <div v-for="member in teamMembers" :key="member.id" class="team-member">
+        <div
+          v-for="member in teamMembers"
+          :key="member.id"
+          class="team-member"
+        >
           <div class="member-avatar">
-            <img :src="member.avatar" :alt="member.name">
+            <img
+              :src="member.avatar"
+              :alt="member.name"
+            >
           </div>
           <h3>{{ member.name }}</h3>
           <p class="position">
@@ -123,30 +132,57 @@ function submitForm() {
           </p>
         </div>
       </div>
-      <button class="btn-secondary" @click="toggleTeam">
+      <button
+        class="btn-secondary"
+        @click="toggleTeam"
+      >
         Hide Team
       </button>
     </div>
-    <button v-else class="btn-secondary" @click="toggleTeam">
+    <button
+      v-else
+      class="btn-secondary"
+      @click="toggleTeam"
+    >
       Show Team
     </button>
 
     <div class="contact-form">
       <h2>Contact Us</h2>
-      <form class="form" @submit.prevent="submitForm">
+      <form
+        class="form"
+        @submit.prevent="submitForm"
+      >
         <div class="form-group">
           <label>Name</label>
-          <input v-model="contactForm.name" required placeholder="Enter your name">
+          <input
+            v-model="contactForm.name"
+            required
+            placeholder="Enter your name"
+          >
         </div>
         <div class="form-group">
           <label>Email</label>
-          <input v-model="contactForm.email" type="email" required placeholder="Enter your email">
+          <input
+            v-model="contactForm.email"
+            type="email"
+            required
+            placeholder="Enter your email"
+          >
         </div>
         <div class="form-group">
           <label>Message</label>
-          <textarea v-model="contactForm.message" required placeholder="How can we help you?" />
+          <textarea
+            v-model="contactForm.message"
+            required
+            placeholder="How can we help you?"
+          />
         </div>
-        <button type="submit" class="btn-primary" :disabled="!isFormValid">
+        <button
+          type="submit"
+          class="btn-primary"
+          :disabled="!isFormValid"
+        >
           Send Message
         </button>
       </form>
@@ -168,7 +204,10 @@ h1 {
   text-align: center;
 }
 
-.company-info, .mission-vision, .team-section, .contact-form {
+.company-info,
+.mission-vision,
+.team-section,
+.contact-form {
   background: white;
   border-radius: 12px;
   padding: 2rem;
@@ -200,7 +239,7 @@ h1 {
 .stat-item p {
   font-size: 2rem;
   font-weight: bold;
-  color: #4CAF50;
+  color: #4caf50;
   margin: 0;
 }
 
@@ -210,7 +249,8 @@ h1 {
   gap: 2rem;
 }
 
-.mission, .vision {
+.mission,
+.vision {
   padding: 1.5rem;
   background: #f8f9fa;
   border-radius: 8px;
@@ -250,7 +290,7 @@ h1 {
 }
 
 .position {
-  color: #4CAF50;
+  color: #4caf50;
   font-weight: 500;
   margin: 0.5rem 0;
 }
@@ -275,7 +315,8 @@ label {
   color: #2c3e50;
 }
 
-input, textarea {
+input,
+textarea {
   width: 100%;
   padding: 0.75rem;
   border: 2px solid #e9ecef;
@@ -289,14 +330,15 @@ textarea {
   resize: vertical;
 }
 
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
   outline: none;
-  border-color: #4CAF50;
+  border-color: #4caf50;
 }
 
 .btn-primary {
   padding: 0.75rem 1.5rem;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 6px;

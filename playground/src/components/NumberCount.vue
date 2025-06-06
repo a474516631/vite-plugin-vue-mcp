@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 
 const count = ref(0)
 const animating = ref(false)
@@ -28,18 +28,31 @@ function toggleCardBackground() {
 </script>
 
 <template>
-  <div class="count-card" :class="{ clicked: isCardClicked }" @click="toggleCardBackground">
+  <div
+    class="count-card"
+    :class="{ clicked: isCardClicked }"
+    @click="toggleCardBackground"
+  >
     <h2 class="title">
       Count Component
     </h2>
-    <div class="count-display" :class="{ 'animate-count': animating }">
+    <div
+      class="count-display"
+      :class="{ 'animate-count': animating }"
+    >
       {{ count }}
     </div>
     <div class="button-group">
-      <button class="btn" @click.stop="decrease">
+      <button
+        class="btn"
+        @click.stop="decrease"
+      >
         -
       </button>
-      <button class="btn" @click.stop="increase">
+      <button
+        class="btn"
+        @click.stop="increase"
+      >
         +
       </button>
     </div>

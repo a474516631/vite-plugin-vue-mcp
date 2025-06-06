@@ -48,7 +48,10 @@ function addTodo() {
         <div class="stat-card">
           <h3>Visitors</h3>
           <p>{{ visitorCount }}</p>
-          <button class="btn-primary" @click="incrementVisitors">
+          <button
+            class="btn-primary"
+            @click="incrementVisitors"
+          >
             Add Visitor
           </button>
         </div>
@@ -59,11 +62,18 @@ function addTodo() {
       <h2>Profile Information</h2>
       <div class="form-group">
         <label>Username</label>
-        <input v-model="userInfo.name" placeholder="Enter username">
+        <input
+          v-model="userInfo.name"
+          placeholder="Enter username"
+        >
       </div>
       <div class="form-group">
         <label>Age</label>
-        <input v-model.number="userInfo.age" type="number" placeholder="Enter age">
+        <input
+          v-model.number="userInfo.age"
+          type="number"
+          placeholder="Enter age"
+        >
       </div>
       <div class="info-display">
         <p><strong>Username:</strong> {{ userInfo.name || 'Not set' }}</p>
@@ -81,14 +91,24 @@ function addTodo() {
           class="task-input"
           @keyup.enter="addTodo"
         >
-        <button class="btn-primary" @click="addTodo">
+        <button
+          class="btn-primary"
+          @click="addTodo"
+        >
           Add Task
         </button>
       </div>
       <ul class="todo-list">
-        <li v-for="todo in todos" :key="todo.id" class="todo-item">
+        <li
+          v-for="todo in todos"
+          :key="todo.id"
+          class="todo-item"
+        >
           <label class="checkbox-container">
-            <input v-model="todo.completed" type="checkbox">
+            <input
+              v-model="todo.completed"
+              type="checkbox"
+            >
             <span class="checkmark" />
           </label>
           <span :class="{ completed: todo.completed }">{{ todo.text }}</span>
@@ -114,7 +134,9 @@ h1 {
   margin-bottom: 2rem;
 }
 
-.welcome-section, .user-info, .todo-section {
+.welcome-section,
+.user-info,
+.todo-section {
   background: white;
   border-radius: 12px;
   padding: 2rem;
@@ -159,7 +181,7 @@ h1 {
 .stat-card p {
   font-size: 2rem;
   font-weight: bold;
-  color: #4CAF50;
+  color: #4caf50;
   margin: 0.5rem 0;
 }
 
@@ -184,7 +206,7 @@ input {
 
 input:focus {
   outline: none;
-  border-color: #4CAF50;
+  border-color: #4caf50;
 }
 
 .info-display {
@@ -233,7 +255,7 @@ input:focus {
 
 .btn-primary {
   padding: 0.75rem 1.5rem;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 6px;

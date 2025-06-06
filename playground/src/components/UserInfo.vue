@@ -12,7 +12,10 @@ const userInfo = ref({
 <template>
   <div class="user-card">
     <div class="avatar">
-      <img :src="userInfo.avatarUrl" alt="User Avatar">
+      <img
+        :src="userInfo.avatarUrl"
+        alt="User Avatar"
+      >
     </div>
     <div class="user-details">
       <h2 class="name">
@@ -62,7 +65,7 @@ const userInfo = ref({
 }
 
 .position {
-  color: #4CAF50;
+  color: #4caf50;
   font-size: 1.1rem;
   margin: 8px 0;
   font-weight: 500;

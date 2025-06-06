@@ -1,63 +1,3 @@
-<template>
-  <div 
-    v-if="element" 
-    class="vue-mcp-element-popover"
-    :class="{ 'top-arrow': popoverStyle['--popover-arrow'] === '\'top\'' }"
-    :style="popoverStyle"
-  >
-    <div class="vue-mcp-element-popover-content">
-      <div class="vue-mcp-element-popover-header">
-        <div class="vue-mcp-element-popover-title">{{ getElementName(element) }}</div>
-        <button class="vue-mcp-element-popover-close" @click="$emit('close')">×</button>
-      </div>
-      
-      <div class="vue-mcp-element-popover-body">
-        <!-- 截图预览 -->
-        <div v-if="screenshotPreview" class="vue-mcp-screenshot-preview-popover">
-          <img :src="screenshotPreview" alt="截图预览" class="vue-mcp-screenshot-preview-img" />
-          <button 
-            class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-danger vue-mcp-screenshot-remove"
-            @click="$emit('remove-screenshot')"
-          >
-            删除截图
-          </button>
-        </div>
-        
-        <!-- 评论输入 -->
-        <textarea 
-          :value="commentText"
-          @input="$emit('update:commentText', ($event.target as HTMLTextAreaElement).value)" 
-          class="vue-mcp-popover-comment-textarea" 
-          placeholder="添加评论..."
-        ></textarea>
-      </div>
-      
-      <div class="vue-mcp-element-popover-footer">
-        <button 
-          v-if="!screenshotPreview"
-          class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-secondary"
-          @click="$emit('capture-screenshot')"
-        >
-          <span class="vue-mcp-btn-icon-text">📷 添加截图</span>
-        </button>
-        <button 
-          class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-primary"
-          @click="$emit('jump-to-code')"
-          title="在编辑器中打开源代码"
-        >
-          <span class="vue-mcp-btn-icon-text">🔍 查看代码</span>
-        </button>
-        <button 
-          class="vue-mcp-btn vue-mcp-btn-primary vue-mcp-btn-sm"
-          @click="$emit('add-element')"
-        >
-          添加元素
-        </button>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
 
@@ -73,10 +13,10 @@ const props = defineProps<{
 defineEmits<{
   (e: 'close'): void
   (e: 'update:commentText', value: string): void
-  (e: 'remove-screenshot'): void
-  (e: 'capture-screenshot'): void
-  (e: 'jump-to-code'): void
-  (e: 'add-element'): void
+  (e: 'removeScreenshot'): void
+  (e: 'captureScreenshot'): void
+  (e: 'jumpToCode'): void
+  (e: 'addElement'): void
 }>()
 
 // 计算样式
@@ -84,11 +24,11 @@ const popoverStyle = computed(() => {
   // 计算屏幕边界
   const screenWidth = window.innerWidth
   // const screenHeight = window.innerHeight
-  
+
   // popover 尺寸 (假设的最大宽高，也可以通过 ref 获取实际尺寸)
   const popoverWidth = 320
   const popoverHeight = 200
-  
+
   // 计算位置
   let top = props.position.top - 10
   let left = props.position.left
@@ -96,7 +36,7 @@ const popoverStyle = computed(() => {
   let transformFrom = 'translateX(-50%) translateY(calc(-100% + 10px))'
   let transformTo = 'translateX(-50%) translateY(-100%)'
   let arrow = 'bottom'
-  
+
   // 检查是否超出屏幕上方
   if (top - popoverHeight < 10) {
     // 改为显示在元素下方
@@ -106,21 +46,21 @@ const popoverStyle = computed(() => {
     transformTo = 'translateX(-50%)'
     arrow = 'top'
   }
-  
+
   // 检查是否超出屏幕左侧
   if (left - (popoverWidth / 2) < 10) {
     left = 10 + (popoverWidth / 2)
   }
-  
+
   // 检查是否超出屏幕右侧
   if (left + (popoverWidth / 2) > screenWidth - 10) {
     left = screenWidth - 10 - (popoverWidth / 2)
   }
-  
+
   return {
-    position: 'fixed' as const,
-    top: `${top}px`,
-    left: `${left}px`,
+    'position': 'fixed' as const,
+    'top': `${top}px`,
+    'left': `${left}px`,
     transform,
     '--popover-arrow': `'${arrow}'`,
     '--transform-from': transformFrom,
@@ -129,10 +69,84 @@ const popoverStyle = computed(() => {
 })
 
 // 获取元素名称
-const getElementName = (el: HTMLElement): string => {
+function getElementName(el: HTMLElement): string {
   return el.localName || el.tagName.toLowerCase()
 }
 </script>
+
+<template>
+  <div
+    v-if="element"
+    class="vue-mcp-element-popover"
+    :class="{ 'top-arrow': popoverStyle['--popover-arrow'] === '\'top\'' }"
+    :style="popoverStyle"
+  >
+    <div class="vue-mcp-element-popover-content">
+      <div class="vue-mcp-element-popover-header">
+        <div class="vue-mcp-element-popover-title">
+          {{ getElementName(element) }}
+        </div>
+        <button
+          class="vue-mcp-element-popover-close"
+          @click="$emit('close')"
+        >
+          ×
+        </button>
+      </div>
+
+      <div class="vue-mcp-element-popover-body">
+        <!-- 截图预览 -->
+        <div
+          v-if="screenshotPreview"
+          class="vue-mcp-screenshot-preview-popover"
+        >
+          <img
+            :src="screenshotPreview"
+            alt="截图预览"
+            class="vue-mcp-screenshot-preview-img"
+          >
+          <button
+            class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-danger vue-mcp-screenshot-remove"
+            @click="$emit('removeScreenshot')"
+          >
+            删除截图
+          </button>
+        </div>
+
+        <!-- 评论输入 -->
+        <textarea
+          :value="commentText"
+          class="vue-mcp-popover-comment-textarea"
+          placeholder="添加评论..."
+          @input="$emit('update:commentText', ($event.target as HTMLTextAreaElement).value)"
+        />
+      </div>
+
+      <div class="vue-mcp-element-popover-footer">
+        <button
+          v-if="!screenshotPreview"
+          class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-secondary"
+          @click="$emit('captureScreenshot')"
+        >
+          <span class="vue-mcp-btn-icon-text">📷 添加截图</span>
+        </button>
+        <button
+          class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-primary"
+          title="在编辑器中打开源代码"
+          @click="$emit('jumpToCode')"
+        >
+          <span class="vue-mcp-btn-icon-text">🔍 查看代码</span>
+        </button>
+        <button
+          class="vue-mcp-btn vue-mcp-btn-primary vue-mcp-btn-sm"
+          @click="$emit('addElement')"
+        >
+          添加元素
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 /* 元素Popover样式 */
@@ -246,13 +260,14 @@ const getElementName = (el: HTMLElement): string => {
 }
 
 @keyframes popover-appear {
-  from { 
-    opacity: 0; 
-    transform: var(--transform-from, translateX(-50%) translateY(calc(-100% + 10px))); 
+  from {
+    opacity: 0;
+    transform: var(--transform-from, translateX(-50%) translateY(calc(-100% + 10px)));
   }
-  to { 
-    opacity: 1; 
-    transform: var(--transform-to, translateX(-50%) translateY(-100%)); 
+
+  to {
+    opacity: 1;
+    transform: var(--transform-to, translateX(-50%) translateY(-100%));
   }
 }
 
@@ -293,4 +308,4 @@ const getElementName = (el: HTMLElement): string => {
 .vue-mcp-screenshot-remove {
   margin-top: 8px;
 }
-</style> 
+</style>

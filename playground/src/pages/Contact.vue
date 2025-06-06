@@ -1,3 +1,17 @@
+<script setup lang="ts">
+// Use storeToRefs to maintain reactivity
+import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
+
+import { useContactStore } from '../stores/contact'
+
+const store = useContactStore()
+const { contactInfo, socialLinks, subjects, form } = storeToRefs(store)
+const { isFormValid } = storeToRefs(store)
+
+const pageTitle = ref('Contact Us')
+</script>
+
 <template>
   <div class="contact">
     <h1>{{ pageTitle }}</h1>
@@ -6,26 +20,26 @@
       <div class="contact-info">
         <h2>Get in Touch</h2>
         <p>We'd love to hear from you. Please fill out the form or contact us using the information below.</p>
-        
+
         <div class="info-items">
           <div class="info-item">
-            <i class="fas fa-map-marker-alt"></i>
+            <i class="fas fa-map-marker-alt" />
             <div>
               <h3>Address</h3>
               <p>{{ contactInfo.address }}</p>
             </div>
           </div>
-          
+
           <div class="info-item">
-            <i class="fas fa-phone"></i>
+            <i class="fas fa-phone" />
             <div>
               <h3>Phone</h3>
               <p>{{ contactInfo.phone }}</p>
             </div>
           </div>
-          
+
           <div class="info-item">
-            <i class="fas fa-envelope"></i>
+            <i class="fas fa-envelope" />
             <div>
               <h3>Email</h3>
               <p>{{ contactInfo.email }}</p>
@@ -33,7 +47,7 @@
           </div>
 
           <div class="info-item">
-            <i class="fas fa-clock"></i>
+            <i class="fas fa-clock" />
             <div>
               <h3>Business Hours</h3>
               <p>{{ contactInfo.hours }}</p>
@@ -42,37 +56,38 @@
         </div>
 
         <div class="social-links">
-          <a v-for="social in socialLinks" 
-             :key="social.name" 
-             :href="social.url" 
-             target="_blank"
-             :title="social.name"
-             class="social-link"
+          <a
+            v-for="social in socialLinks"
+            :key="social.name"
+            :href="social.url"
+            target="_blank"
+            :title="social.name"
+            class="social-link"
           >
-            <i :class="social.icon"></i>
+            <i :class="social.icon" />
           </a>
         </div>
       </div>
 
       <div class="contact-form">
         <h2>Send us a Message</h2>
-        <form @submit.prevent="submitForm">
+        <form>
           <div class="form-row">
             <div class="form-group">
               <label>First Name</label>
-              <input 
-                v-model="form.firstName" 
-                type="text" 
-                required 
+              <input
+                v-model="form.firstName"
+                type="text"
+                required
                 placeholder="Enter your first name"
               >
             </div>
             <div class="form-group">
               <label>Last Name</label>
-              <input 
-                v-model="form.lastName" 
-                type="text" 
-                required 
+              <input
+                v-model="form.lastName"
+                type="text"
+                required
                 placeholder="Enter your last name"
               >
             </div>
@@ -80,30 +95,36 @@
 
           <div class="form-group">
             <label>Email</label>
-            <input 
-              v-model="form.email" 
-              type="email" 
-              required 
+            <input
+              v-model="form.email"
+              type="email"
+              required
               placeholder="Enter your email"
             >
           </div>
 
           <div class="form-group">
             <label>Phone (Optional)</label>
-            <input 
-              v-model="form.phone" 
-              type="tel" 
+            <input
+              v-model="form.phone"
+              type="tel"
               placeholder="Enter your phone number"
             >
           </div>
 
           <div class="form-group">
             <label>Subject</label>
-            <select v-model="form.subject" required>
-              <option value="">Select a subject</option>
-              <option v-for="subject in subjects" 
-                      :key="subject.value" 
-                      :value="subject.value"
+            <select
+              v-model="form.subject"
+              required
+            >
+              <option value="">
+                Select a subject
+              </option>
+              <option
+                v-for="subject in subjects"
+                :key="subject.value"
+                :value="subject.value"
               >
                 {{ subject.label }}
               </option>
@@ -112,14 +133,18 @@
 
           <div class="form-group">
             <label>Message</label>
-            <textarea 
-              v-model="form.message" 
-              required 
+            <textarea
+              v-model="form.message"
+              required
               placeholder="How can we help you?"
-            ></textarea>
+            />
           </div>
 
-          <button type="submit" class="btn-primary" :disabled="!isFormValid">
+          <button
+            type="submit"
+            class="btn-primary"
+            :disabled="!isFormValid"
+          >
             Send Message
           </button>
         </form>
@@ -137,25 +162,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { useContactStore } from '../stores/contact'
-import { ref } from 'vue'
-const store = useContactStore()
-
-// Use storeToRefs to maintain reactivity
-import { storeToRefs } from 'pinia'
-const { contactInfo, socialLinks, subjects, form } = storeToRefs(store)
-const { isFormValid } = storeToRefs(store)
-
-const pageTitle = ref('Contact Us')
-
-const submitForm = async () => {
-  if (await store.submitForm()) {
-    alert('Thank you for your message! We will get back to you soon.')
-  }
-}
-</script>
 
 <style scoped>
 .contact {
@@ -184,7 +190,8 @@ h2 {
   margin-bottom: 3rem;
 }
 
-.contact-info, .contact-form {
+.contact-info,
+.contact-form {
   background: white;
   border-radius: 12px;
   padding: 2rem;
@@ -204,7 +211,7 @@ h2 {
 
 .info-item i {
   font-size: 1.5rem;
-  color: #4CAF50;
+  color: #4caf50;
   width: 2rem;
   text-align: center;
 }
@@ -234,13 +241,13 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #4CAF50;
+  color: #4caf50;
   text-decoration: none;
   transition: all 0.3s;
 }
 
 .social-link:hover {
-  background: #4CAF50;
+  background: #4caf50;
   color: white;
   transform: translateY(-2px);
 }
@@ -261,7 +268,9 @@ label {
   color: #2c3e50;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   width: 100%;
   padding: 0.75rem;
   border: 2px solid #e9ecef;
@@ -275,15 +284,17 @@ textarea {
   resize: vertical;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
   outline: none;
-  border-color: #4CAF50;
+  border-color: #4caf50;
 }
 
 .btn-primary {
   width: 100%;
   padding: 0.75rem 1.5rem;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 6px;
@@ -328,9 +339,9 @@ input:focus, select:focus, textarea:focus {
   .contact-container {
     grid-template-columns: 1fr;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
   }
 }
-</style> 
+</style>

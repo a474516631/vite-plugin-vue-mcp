@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import NumberCount from '../components/NumberCount.vue'
 import UserInfo from '../components/UserInfo.vue'
 
@@ -42,13 +42,20 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container" @mousemove="handleMouseMove">
+  <div
+    class="container"
+    @mousemove="handleMouseMove"
+  >
     <UserInfo />
     <NumberCount />
     <div class="particles">
-      <div v-for="i in 20" :key="i" class="particle" :style="getParticleStyle(i)" />
+      <div
+        v-for="i in 20"
+        :key="i"
+        class="particle"
+        :style="getParticleStyle(i)"
+      />
     </div>
-
   </div>
 </template>
 

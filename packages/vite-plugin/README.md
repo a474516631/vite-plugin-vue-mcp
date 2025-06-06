@@ -59,39 +59,43 @@ window.VueMcpAI.edit({
 ### 在 Vue 组件中使用
 
 ```vue
-<template>
-  <div>
-    <button @click="handleAIEdit">使用AI修复问题</button>
-  </div>
-</template>
-
 <script>
 export default {
   methods: {
     async handleAIEdit() {
       if (!window.VueMcpAI) {
-        console.error('VueMcpAI 未加载，请确保 vite-plugin-vue-mcp 已正确配置');
-        return;
+        console.error('VueMcpAI 未加载，请确保 vite-plugin-vue-mcp 已正确配置')
+        return
       }
 
       try {
         const result = await window.VueMcpAI.edit({
-          prompt: "优化这个组件的性能",
-          filePath: "src/components/CurrentComponent.vue"
-        });
+          prompt: '优化这个组件的性能',
+          filePath: 'src/components/CurrentComponent.vue'
+        })
 
         if (result.success) {
-          console.log('AI编辑请求已发送');
-        } else {
-          console.error('AI编辑请求失败:', result.error);
+          console.log('AI编辑请求已发送')
         }
-      } catch (error) {
-        console.error('发送AI编辑请求时出错:', error);
+        else {
+          console.error('AI编辑请求失败:', result.error)
+        }
+      }
+      catch (error) {
+        console.error('发送AI编辑请求时出错:', error)
       }
     }
   }
 }
 </script>
+
+<template>
+  <div>
+    <button @click="handleAIEdit">
+      使用AI修复问题
+    </button>
+  </div>
+</template>
 ```
 
 ## 与 VSCode 插件集成

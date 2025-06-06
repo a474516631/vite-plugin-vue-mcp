@@ -5,11 +5,16 @@ export default antfu(
   {
     type: 'lib',
     pnpm: true,
-    formatters: true,
+    vue: true,
     rules: {
       'ts/explicit-function-return-type': 'off',
       'no-console': 'off',
+      'vue/max-attributes-per-line': 'error',
+      'ts/no-use-before-define': 'off',
+      'jsdoc/check-property-names': 'off',
+      'jsdoc/check-param-names': 'off',
     },
+
   },
 
 )

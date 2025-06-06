@@ -1,26 +1,108 @@
+<script setup lang="ts">
+// 定义属性
+interface ElementInfo {
+  name: string
+  path: string
+  type?: string
+  comment?: string
+  screenshot?: string
+  isSubmitted?: boolean
+  isFixed?: boolean
+}
+
+interface Props {
+  element: ElementInfo
+  isSuggestion?: boolean
+}
+
+defineProps<Props>()
+
+// 定义事件
+defineEmits<{
+  (e: 'view', path: string): void
+  (e: 'remove', path: string): void
+  (e: 'add', element: ElementInfo): void
+  (e: 'comment', path: string): void
+  (e: 'toggleSubmit', path: string): void
+  (e: 'toggleFixed', path: string): void
+}>()
+
+// 查看截图
+function viewScreenshot(screenshot: string) {
+  const newWindow = window.open('', '_blank', 'width=800,height=600')
+  if (newWindow) {
+    const html = `<!DOCTYPE html>`
+      + `<html>`
+      + `<head>`
+      + `<title>元素截图</title>`
+      + `<style>`
+      + `body { margin: 0; padding: 20px; font-family: system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; background: #f8fafc; }`
+      + `.image-container { max-width: 100%; text-align: center; margin-bottom: 20px; }`
+      + `img { max-width: 100%; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }`
+      + `.download-btn { background: #4f46e5; color: white; border: none; border-radius: 4px; padding: 8px 16px; font-size: 14px; cursor: pointer; }`
+      + `</style>`
+      + `</head>`
+      + `<body>`
+      + `<div class="image-container"><img src="${screenshot}" alt="元素截图"></div>`
+      + `<button class="download-btn" onclick="downloadImage()">下载图片</button>`
+      + `<script>`
+      + `function downloadImage() { const link = document.createElement("a"); link.href = "${screenshot}"; link.download = "element-screenshot-" + Date.now() + ".png"; document.body.appendChild(link); link.click(); document.body.removeChild(link); }`
+      + `<\/script>`
+      + `</body>`
+      + `</html>`
+
+    newWindow.document.write(html)
+    newWindow.document.close()
+    newWindow.focus()
+  }
+}
+</script>
+
 <template>
-  <li :class="['vue-mcp-element-item', { 'vue-mcp-suggestion': isSuggestion, 'vue-mcp-submitted': element.isSubmitted, 'vue-mcp-fixed': element.isFixed }]">
+  <li
+    class="vue-mcp-element-item"
+    :class="[{ 'vue-mcp-suggestion': isSuggestion, 'vue-mcp-submitted': element.isSubmitted, 'vue-mcp-fixed': element.isFixed }]"
+  >
     <div class="vue-mcp-element-content">
       <div class="vue-mcp-element-name">
         {{ element.name }}
         <div class="vue-mcp-element-status">
-          <span v-if="element.isSubmitted" class="vue-mcp-status-badge vue-mcp-status-submitted">已提交</span>
-          <span v-if="element.isFixed" class="vue-mcp-status-badge vue-mcp-status-fixed">已修复</span>
+          <span
+            v-if="element.isSubmitted"
+            class="vue-mcp-status-badge vue-mcp-status-submitted"
+          >已提交</span>
+          <span
+            v-if="element.isFixed"
+            class="vue-mcp-status-badge vue-mcp-status-fixed"
+          >已修复</span>
         </div>
       </div>
-      <div class="vue-mcp-element-path">{{ element.path }}</div>
-      <div v-if="element.comment" class="vue-mcp-element-comment">
+      <div class="vue-mcp-element-path">
+        {{ element.path }}
+      </div>
+      <div
+        v-if="element.comment"
+        class="vue-mcp-element-comment"
+      >
         <span class="vue-mcp-comment-icon">💬</span>
         <span class="vue-mcp-comment-text">{{ element.comment }}</span>
       </div>
-      <div v-if="element.screenshot" class="vue-mcp-element-screenshot" @click="viewScreenshot(element.screenshot)">
-        <img :src="element.screenshot" alt="元素截图" class="vue-mcp-screenshot-thumb" />
+      <div
+        v-if="element.screenshot"
+        class="vue-mcp-element-screenshot"
+        @click="viewScreenshot(element.screenshot)"
+      >
+        <img
+          :src="element.screenshot"
+          alt="元素截图"
+          class="vue-mcp-screenshot-thumb"
+        >
         <span class="vue-mcp-screenshot-hint">点击查看大图</span>
       </div>
     </div>
     <div class="vue-mcp-element-actions">
       <template v-if="!isSuggestion">
-        <button 
+        <button
           type="button"
           class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-icon"
           title="显示盒模型"
@@ -28,7 +110,7 @@
         >
           📏
         </button>
-        <button 
+        <button
           type="button"
           class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-icon"
           title="添加评论"
@@ -36,25 +118,25 @@
         >
           💬
         </button>
-        <button 
+        <button
           type="button"
           class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-icon"
-          :class="{'vue-mcp-btn-success': element.isSubmitted}"
+          :class="{ 'vue-mcp-btn-success': element.isSubmitted }"
           :title="element.isSubmitted ? '取消提交' : '标记为已提交'"
           @click="$emit('toggleSubmit', element.path)"
         >
           ✓
         </button>
-        <button 
+        <button
           type="button"
           class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-icon"
-          :class="{'vue-mcp-btn-success': element.isFixed}"
+          :class="{ 'vue-mcp-btn-success': element.isFixed }"
           :title="element.isFixed ? '取消修复' : '标记为已修复'"
           @click="$emit('toggleFixed', element.path)"
         >
           🔧
         </button>
-        <button 
+        <button
           type="button"
           class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-icon vue-mcp-btn-danger"
           title="删除"
@@ -64,7 +146,7 @@
         </button>
       </template>
       <template v-else>
-        <button 
+        <button
           type="button"
           class="vue-mcp-btn vue-mcp-btn-sm"
           @click="$emit('add', element)"
@@ -75,66 +157,6 @@
     </div>
   </li>
 </template>
-
-<script setup lang="ts">
-// 定义属性
-interface ElementInfo {
-  name: string;
-  path: string;
-  type?: string;
-  comment?: string;
-  screenshot?: string;
-  isSubmitted?: boolean;
-  isFixed?: boolean;
-}
-
-interface Props {
-  element: ElementInfo;
-  isSuggestion?: boolean;
-}
-
-defineProps<Props>();
-
-// 定义事件
-defineEmits<{
-  (e: 'view', path: string): void;
-  (e: 'remove', path: string): void;
-  (e: 'add', element: ElementInfo): void;
-  (e: 'comment', path: string): void;
-  (e: 'toggleSubmit', path: string): void;
-  (e: 'toggleFixed', path: string): void;
-}>();
-
-// 查看截图
-function viewScreenshot(screenshot: string) {
-  const newWindow = window.open('', '_blank', 'width=800,height=600');
-  if (newWindow) {
-    const html = '<!DOCTYPE html>' +
-      '<html>' +
-      '<head>' +
-      '<title>元素截图</title>' +
-      '<style>' +
-      'body { margin: 0; padding: 20px; font-family: system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; background: #f8fafc; }' +
-      '.image-container { max-width: 100%; text-align: center; margin-bottom: 20px; }' +
-      'img { max-width: 100%; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }' +
-      '.download-btn { background: #4f46e5; color: white; border: none; border-radius: 4px; padding: 8px 16px; font-size: 14px; cursor: pointer; }' +
-      '</style>' +
-      '</head>' +
-      '<body>' +
-      '<div class="image-container"><img src="' + screenshot + '" alt="元素截图"></div>' +
-      '<button class="download-btn" onclick="downloadImage()">下载图片</button>' +
-      '<script>' +
-      'function downloadImage() { const link = document.createElement("a"); link.href = "' + screenshot + '"; link.download = "element-screenshot-" + Date.now() + ".png"; document.body.appendChild(link); link.click(); document.body.removeChild(link); }' +
-      '<\/script>' +
-      '</body>' +
-      '</html>';
-    
-    newWindow.document.write(html);
-    newWindow.document.close();
-    newWindow.focus();
-  }
-}
-</script>
 
 <style scoped>
 .vue-mcp-element-item {
@@ -282,4 +304,4 @@ function viewScreenshot(screenshot: string) {
 .vue-mcp-btn-success {
   background-color: #10b981;
 }
-</style> 
+</style>

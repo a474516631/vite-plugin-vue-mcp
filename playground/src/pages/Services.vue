@@ -1,26 +1,69 @@
+<script setup lang="ts">
+import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+import { useServicesStore } from '../stores/services'
+
+const router = useRouter()
+const store = useServicesStore()
+const { services, process, technologies } = storeToRefs(store)
+
+const pageTitle = ref('Our Services')
+
+async function requestService(service: any) {
+  await store.requestService(service)
+  router.push('/contact')
+}
+
+function contactUs() {
+  router.push('/contact')
+}
+</script>
+
 <template>
   <div class="services">
     <h1>{{ pageTitle }}</h1>
 
     <div class="services-grid">
-      <div v-for="service in services" :key="service.id" class="service-card">
+      <div
+        v-for="service in services"
+        :key="service.id"
+        class="service-card"
+      >
         <div class="service-icon">
-          <i :class="service.icon"></i>
+          <i :class="service.icon" />
         </div>
         <h3>{{ service.title }}</h3>
         <p>{{ service.description }}</p>
         <ul class="features-list">
-          <li v-for="feature in service.features" :key="feature">{{ feature }}</li>
+          <li
+            v-for="feature in service.features"
+            :key="feature"
+          >
+            {{ feature }}
+          </li>
         </ul>
-        <button class="btn-primary" @click="requestService(service)">Learn More</button>
+        <button
+          class="btn-primary"
+          @click="requestService(service)"
+        >
+          Learn More
+        </button>
       </div>
     </div>
 
     <div class="process-section">
       <h2>Our Development Process</h2>
       <div class="process-timeline">
-        <div v-for="step in process" :key="step.id" class="process-step">
-          <div class="step-number">{{ step.id }}</div>
+        <div
+          v-for="step in process"
+          :key="step.id"
+          class="process-step"
+        >
+          <div class="step-number">
+            {{ step.id }}
+          </div>
           <h3>{{ step.title }}</h3>
           <p>{{ step.description }}</p>
         </div>
@@ -30,8 +73,15 @@
     <div class="technologies">
       <h2>Technologies We Use</h2>
       <div class="tech-grid">
-        <div v-for="tech in technologies" :key="tech.id" class="tech-item">
-          <img :src="tech.icon" :alt="tech.name">
+        <div
+          v-for="tech in technologies"
+          :key="tech.id"
+          class="tech-item"
+        >
+          <img
+            :src="tech.icon"
+            :alt="tech.name"
+          >
           <span>{{ tech.name }}</span>
         </div>
       </div>
@@ -40,32 +90,15 @@
     <div class="cta-section">
       <h2>Ready to Start Your Project?</h2>
       <p>Get in touch with us to discuss your requirements</p>
-      <button class="btn-primary" @click="contactUs">Contact Us Now</button>
+      <button
+        class="btn-primary"
+        @click="contactUs"
+      >
+        Contact Us Now
+      </button>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { useServicesStore } from '../stores/services'
-import { useRouter } from 'vue-router'
-import { ref } from 'vue'
-const router = useRouter()
-const store = useServicesStore()
-
-import { storeToRefs } from 'pinia'
-const { services, process, technologies } = storeToRefs(store)
-
-const pageTitle = ref('Our Services')
-
-const requestService = async (service: any) => {
-  await store.requestService(service)
-  router.push('/contact')
-}
-
-const contactUs = () => {
-  router.push('/contact')
-}
-</script>
 
 <style scoped>
 .services {
@@ -110,7 +143,7 @@ h2 {
 
 .service-icon {
   font-size: 2.5rem;
-  color: #4CAF50;
+  color: #4caf50;
   margin-bottom: 1rem;
 }
 
@@ -127,8 +160,8 @@ h2 {
 }
 
 .features-list li::before {
-  content: "✓";
-  color: #4CAF50;
+  content: '✓';
+  color: #4caf50;
   margin-right: 0.5rem;
 }
 
@@ -143,7 +176,7 @@ h2 {
 }
 
 .process-timeline::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 2rem;
   left: 0;
@@ -166,7 +199,7 @@ h2 {
 .step-number {
   width: 4rem;
   height: 4rem;
-  background: #4CAF50;
+  background: #4caf50;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -212,7 +245,7 @@ h2 {
 
 .btn-primary {
   padding: 0.75rem 1.5rem;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 6px;
@@ -224,4 +257,4 @@ h2 {
 .btn-primary:hover {
   background-color: #45a049;
 }
-</style> 
+</style>

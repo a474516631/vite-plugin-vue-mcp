@@ -1,60 +1,3 @@
-<template>
-  <div v-if="visible" class="vue-mcp-comment-dialog">
-    <div class="vue-mcp-comment-dialog-header">
-      <h3 class="vue-mcp-comment-dialog-title">添加评论</h3>
-      <button 
-        class="vue-mcp-comment-dialog-close"
-        @click="$emit('cancel')"
-      >
-        ×
-      </button>
-    </div>
-    <div class="vue-mcp-comment-dialog-body">
-      <textarea 
-        :value="commentText"
-        @input="$emit('update:commentText', ($event.target as HTMLTextAreaElement).value)" 
-        class="vue-mcp-comment-textarea" 
-        placeholder="请输入评论内容..."
-      ></textarea>
-      
-      <!-- 截图预览 -->
-      <div v-if="screenshotPreview" class="vue-mcp-screenshot-preview">
-        <img :src="screenshotPreview" alt="截图预览" class="vue-mcp-screenshot-preview-img" />
-        <button 
-          class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-danger vue-mcp-screenshot-remove"
-          @click="$emit('remove-screenshot')"
-        >
-          删除截图
-        </button>
-      </div>
-      
-      <!-- 截图按钮 -->
-      <div v-if="!screenshotPreview" class="vue-mcp-screenshot-actions">
-        <button 
-          class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-secondary"
-          @click="$emit('capture-screenshot')"
-        >
-          <span class="vue-mcp-btn-icon-text">📷 添加截图</span>
-        </button>
-      </div>
-    </div>
-    <div class="vue-mcp-comment-dialog-footer">
-      <button 
-        class="vue-mcp-btn vue-mcp-btn-sm"
-        @click="$emit('cancel')"
-      >
-        取消
-      </button>
-      <button 
-        class="vue-mcp-btn vue-mcp-btn-primary vue-mcp-btn-sm"
-        @click="$emit('save')"
-      >
-        保存
-      </button>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 // Props
 defineProps<{
@@ -66,12 +9,84 @@ defineProps<{
 // Emits
 defineEmits<{
   (e: 'update:commentText', value: string): void
-  (e: 'remove-screenshot'): void
-  (e: 'capture-screenshot'): void
+  (e: 'removeScreenshot'): void
+  (e: 'captureScreenshot'): void
   (e: 'cancel'): void
   (e: 'save'): void
 }>()
 </script>
+
+<template>
+  <div
+    v-if="visible"
+    class="vue-mcp-comment-dialog"
+  >
+    <div class="vue-mcp-comment-dialog-header">
+      <h3 class="vue-mcp-comment-dialog-title">
+        添加评论
+      </h3>
+      <button
+        class="vue-mcp-comment-dialog-close"
+        @click="$emit('cancel')"
+      >
+        ×
+      </button>
+    </div>
+    <div class="vue-mcp-comment-dialog-body">
+      <textarea
+        :value="commentText"
+        class="vue-mcp-comment-textarea"
+        placeholder="请输入评论内容..."
+        @input="$emit('update:commentText', ($event.target as HTMLTextAreaElement).value)"
+      />
+
+      <!-- 截图预览 -->
+      <div
+        v-if="screenshotPreview"
+        class="vue-mcp-screenshot-preview"
+      >
+        <img
+          :src="screenshotPreview"
+          alt="截图预览"
+          class="vue-mcp-screenshot-preview-img"
+        >
+        <button
+          class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-danger vue-mcp-screenshot-remove"
+          @click="$emit('removeScreenshot')"
+        >
+          删除截图
+        </button>
+      </div>
+
+      <!-- 截图按钮 -->
+      <div
+        v-if="!screenshotPreview"
+        class="vue-mcp-screenshot-actions"
+      >
+        <button
+          class="vue-mcp-btn vue-mcp-btn-sm vue-mcp-btn-secondary"
+          @click="$emit('captureScreenshot')"
+        >
+          <span class="vue-mcp-btn-icon-text">📷 添加截图</span>
+        </button>
+      </div>
+    </div>
+    <div class="vue-mcp-comment-dialog-footer">
+      <button
+        class="vue-mcp-btn vue-mcp-btn-sm"
+        @click="$emit('cancel')"
+      >
+        取消
+      </button>
+      <button
+        class="vue-mcp-btn vue-mcp-btn-primary vue-mcp-btn-sm"
+        @click="$emit('save')"
+      >
+        保存
+      </button>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 /* 评论对话框样式 */
@@ -193,4 +208,4 @@ defineEmits<{
 .vue-mcp-btn-icon-text {
   margin-left: 4px;
 }
-</style> 
+</style>

@@ -1,12 +1,3 @@
-<template>
-  <div v-if="visible" class="vue-mcp-notification-tip" :class="type">
-    <div class="vue-mcp-notification-tip-content">
-      <span class="vue-mcp-notification-tip-text">{{ message }}</span>
-      <button class="vue-mcp-notification-tip-close" @click="$emit('close')">×</button>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 // Props
 defineProps<{
@@ -20,6 +11,24 @@ defineEmits<{
   (e: 'close'): void
 }>()
 </script>
+
+<template>
+  <div
+    v-if="visible"
+    class="vue-mcp-notification-tip"
+    :class="type"
+  >
+    <div class="vue-mcp-notification-tip-content">
+      <span class="vue-mcp-notification-tip-text">{{ message }}</span>
+      <button
+        class="vue-mcp-notification-tip-close"
+        @click="$emit('close')"
+      >
+        ×
+      </button>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .vue-mcp-notification-tip {
@@ -72,9 +81,21 @@ defineEmits<{
 }
 
 @keyframes fade-in-out {
-  0% { opacity: 0; transform: translateY(-10px); }
-  10% { opacity: 1; transform: translateY(0); }
-  90% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-10px); }
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
 }
-</style> 
+</style>

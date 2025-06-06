@@ -1,37 +1,15 @@
-<template>
-  <div class="vue-mcp-element-list-container">
-    <div class="vue-mcp-form-label">已选择的元素</div>
-    <ul class="vue-mcp-element-list">
-      <ElementItem
-        v-for="item in elements"
-        :key="item.path"
-        :element="item"
-        @remove="$emit('remove', item.path)"
-        @view="$emit('view', item.path)"
-        @comment="$emit('comment', item.path)"
-        @screenshot="$emit('screenshot', item.path)"
-        @toggle-submit="$emit('toggleSubmit', item.path)"
-        @toggle-fixed="$emit('toggleFixed', item.path)"
-      />
-      <li v-if="elements.length === 0" class="vue-mcp-element-item vue-mcp-empty-item">
-        暂无选择的元素
-      </li>
-    </ul>
-  </div>
-</template>
-
 <script setup lang="ts">
 import ElementItem from './ElementItem.vue'
 
 // 元素类型定义
 export interface ElementInfo {
-  name: string;
-  path: string;
-  type?: string;
-  comment?: string;
-  screenshot?: string;
-  isSubmitted?: boolean;
-  isFixed?: boolean;
+  name: string
+  path: string
+  type?: string
+  comment?: string
+  screenshot?: string
+  isSubmitted?: boolean
+  isFixed?: boolean
 }
 
 // Props
@@ -49,6 +27,33 @@ defineEmits<{
   (e: 'toggleFixed', path: string): void
 }>()
 </script>
+
+<template>
+  <div class="vue-mcp-element-list-container">
+    <div class="vue-mcp-form-label">
+      已选择的元素
+    </div>
+    <ul class="vue-mcp-element-list">
+      <ElementItem
+        v-for="item in elements"
+        :key="item.path"
+        :element="item"
+        @remove="$emit('remove', item.path)"
+        @view="$emit('view', item.path)"
+        @comment="$emit('comment', item.path)"
+        @screenshot="$emit('screenshot', item.path)"
+        @toggle-submit="$emit('toggleSubmit', item.path)"
+        @toggle-fixed="$emit('toggleFixed', item.path)"
+      />
+      <li
+        v-if="elements.length === 0"
+        class="vue-mcp-element-item vue-mcp-empty-item"
+      >
+        暂无选择的元素
+      </li>
+    </ul>
+  </div>
+</template>
 
 <style scoped>
 .vue-mcp-element-list-container {
@@ -77,4 +82,4 @@ defineEmits<{
   color: #666;
   text-align: center;
 }
-</style> 
+</style>

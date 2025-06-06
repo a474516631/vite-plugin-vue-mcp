@@ -1,6 +1,8 @@
 <template>
   <div class="vue-mcp-help-tip">
-    <div class="vue-mcp-help-tip-icon">💡</div>
+    <div class="vue-mcp-help-tip-icon">
+      💡
+    </div>
     <div class="vue-mcp-help-tip-text">
       <strong>使用方法：</strong> 按住 <kbd>Alt</kbd> 键并移动鼠标到元素上方进行高亮。
       按下 <kbd>Alt+点击</kbd> 可在元素上方显示操作面板，支持查看代码、添加评论和截图。
@@ -46,4 +48,4 @@ kbd {
   padding: 2px 4px;
   margin: 0 2px;
 }
-</style> 
+</style>
