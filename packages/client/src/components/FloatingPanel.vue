@@ -15,7 +15,7 @@
         :aria-label="isMinimized ? '展开' : '最小化'"
         @click="toggleMinimize"
       >
-        {{ isMinimized ? '+' : '−' }}
+        {{ isMinimized ? '' : '−' }}
       </button>
     </div>
     
@@ -54,6 +54,8 @@
       </form>
     </div>
 
+
+
     <!-- 通知提示 -->
     <NotificationTip
       :visible="showKeyboardShortcutTip"
@@ -61,6 +63,8 @@
       type="success"
       @close="dismissKeyboardShortcutTip"
     />
+
+  </div>
 
     <!-- 元素 Popover -->
     <ElementPopover
@@ -88,7 +92,14 @@
       @cancel="cancelComment"
       @save="saveComment"
     />
-  </div>
+  <!-- 悬浮球 -->
+      <div 
+      v-if="isMinimized" 
+      class="vue-mcp-floating-ball"
+      @click="toggleMinimize"
+    >
+      UI
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -821,11 +832,38 @@ onUnmounted(() => {
   z-index: 99999;
   overflow: hidden;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .vue-mcp-floating-panel.minimized {
-  transform: translateY(calc(100% - 40px));
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  
+}
+
+.vue-mcp-floating-ball {
+  position: fixed;
+  bottom: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #4f46e5;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 99999;
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+.vue-mcp-floating-ball:hover {
+  transform: scale(1.1);
 }
 
 .vue-mcp-floating-panel-header {
