@@ -82,7 +82,7 @@ function toggleCardBackground() {
 }
 
 .title {
-  color: #ff3333;
+  color: #42b883;
   margin: 0 0 20px 0;
   font-size: 1.5rem;
 }

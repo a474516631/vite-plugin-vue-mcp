@@ -50,6 +50,7 @@
     "play": "pnpm build:client && pnpm build:vite-plugin && pnpm -C playground dev",
     "prepublishOnly": "pnpm build:all",
     "release": "nr build:all && bumpp patch && pnpm publish -r  --no-git-checks",
+    "docs:build": "pnpm -C docs docs:build",
     "lint": "eslint"
   },
   "peerDependencies": {

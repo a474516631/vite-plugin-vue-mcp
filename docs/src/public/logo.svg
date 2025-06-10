@@ -1,0 +1,23 @@
+<svg viewBox="0 0 100 100" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景圆形 -->
+  <circle cx="50" cy="50" r="45" fill="#35495e" />
+
+  <!-- 外部边框 - 代表盒模型 -->
+  <rect x="25" y="25" width="50" height="50" rx="6" ry="6" fill="none" stroke="#42b883" stroke-width="3" stroke-dasharray="3,2" />
+
+  <!-- 内部内容区域 - 代表UI元素 -->
+  <rect x="30" y="30" width="40" height="40" rx="4" ry="4" fill="#42b883" opacity="0.6" />
+
+  <!-- 检查/扫描线 - 代表检查工具 -->
+  <line x1="20" y1="20" x2="80" y2="80" stroke="#ffffff" stroke-width="2" stroke-dasharray="2,2" />
+  <line x1="80" y1="20" x2="20" y2="80" stroke="#ffffff" stroke-width="2" stroke-dasharray="2,2" />
+
+  <!-- 高亮指示器 - 代表元素高亮功能 -->
+  <circle cx="50" cy="50" r="15" fill="#f6b26b" opacity="0.5" />
+
+  <!-- AI符号 - 代表AI辅助 -->
+  <text x="50" y="55" font-family="Arial" font-size="14" fill="#ffffff" text-anchor="middle" font-weight="bold">AI</text>
+
+  <!-- 光标 - 代表点击选择功能 -->
+  <path d="M40,75 L45,65 L50,75 L47,75 L47,80 L43,80 L43,75 Z" fill="#ffffff" />
+</svg>

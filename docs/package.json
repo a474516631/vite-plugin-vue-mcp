@@ -1,0 +1,22 @@
+{
+  "name": "@aireview/docs",
+  "type": "module",
+  "version": "0.0.58",
+  "description": "智能 UI 走查工具 文档",
+  "author": "yechangteng",
+  "license": "MIT",
+  "keywords": [
+    "vitepress",
+    "documentation",
+    "docs"
+  ],
+  "scripts": {
+    "dev": "vitepress dev",
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "catalog:"
+  }
+}

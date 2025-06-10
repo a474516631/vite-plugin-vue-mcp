@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-06-06T07:43:43.709Z",
+  "timestamp": "2025-06-09T08:50:47.307Z",
   "elements": [
     {
       "name": "p",
@@ -22,6 +22,14 @@
       "name": "h2",
       "path": "/Users/ycteng/workspace/zyb/vite-plugin-vue-mcp/playground/src/components/NumberCount.vue:32:5",
       "comment": "颜色应该为红色",
+      "stableId": "{\"tagName\":\"h2\",\"classList\":[\"title\"],\"textContent\":\"Count Component\",\"domPath\":\"div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h2:nth-child(1)\"}",
+      "isSubmitted": true,
+      "isFixed": true
+    },
+    {
+      "name": "h2",
+      "path": "/Users/ycteng/workspace/zyb/vite-plugin-vue-mcp/playground/src/components/NumberCount.vue:36:5",
+      "comment": "字体改成主题色",
       "stableId": "{\"tagName\":\"h2\",\"classList\":[\"title\"],\"textContent\":\"Count Component\",\"domPath\":\"div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h2:nth-child(1)\"}",
       "isSubmitted": true,
       "isFixed": true

@@ -1,0 +1,16 @@
+stages:
+  - deploy
+
+deploy-docs:
+  stage: deploy
+  tags:
+    - docs
+  only:
+    - dev
+    - main
+    - feat-vite-press-ycteng
+  script:
+    - env
+    - sh ./docs-build.sh
+    - sh ${DEPLOY}
+    - echo "deploy success!"
